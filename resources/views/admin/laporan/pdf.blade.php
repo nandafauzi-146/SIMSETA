@@ -71,10 +71,11 @@
     <h1>LAPORAN SERTIFIKAT TANAH</h1>
     <p class="subtitle">Desa Tegal Mulyo — {{ now()->format('d F Y') }}</p>
 
-    @if(($filters['desa_id'] ?? false) || ($filters['tahun'] ?? false) || ($filters['luas_min'] ?? false) || ($filters['luas_max'] ?? false))
+    @if(($filters['desa_id'] ?? false) || ($filters['tahun'] ?? false) || ($filters['kategori'] ?? false) || ($filters['luas_min'] ?? false) || ($filters['luas_max'] ?? false))
         <div class="filter-info">
             Filter:
-            @if($desa) Dusun: {{ $desa->dusun }} @endif
+            @if($desa) Dukuh: {{ $desa->dusun }} @endif
+            @if($filters['kategori'] ?? false) | Kategori: {{ $filters['kategori'] === 'kas_desa' ? 'Tanah Kas Desa' : 'Tanah Pribadi' }} @endif
             @if($filters['tahun'] ?? false) | Tahun: {{ $filters['tahun'] }} @endif
             @if($filters['luas_min'] ?? false) | Luas Min: {{ number_format($filters['luas_min'], 0, ',', '.') }} @endif
             @if($filters['luas_max'] ?? false) | Luas Max: {{ number_format($filters['luas_max'], 0, ',', '.') }} @endif
@@ -85,26 +86,33 @@
         <thead>
             <tr>
                 <th style="width:5%">No</th>
-                <th style="width:18%">Alas Hak</th>
+                <th style="width:15%">Kategori</th>
+                <th style="width:15%">Alas Hak</th>
                 <th style="width:10%">Luas (M²)</th>
-                <th style="width:18%">Pemilik</th>
+                <th style="width:20%">Pemilik / Pemanfaatan</th>
                 <th style="width:12%">Jenis Hak</th>
                 <th style="width:10%">Status</th>
-                <th style="width:12%">Dusun</th>
-                <th style="width:15%">Tgl Input</th>
+                <th style="width:13%">Dukuh</th>
             </tr>
         </thead>
         <tbody>
             @forelse($sertifikats as $s)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
+                    <td>{{ $s->kategori_label }}</td>
                     <td>{{ $s->nomor_sertifikat }}</td>
                     <td>{{ number_format($s->luas, 0, ',', '.') }}</td>
-                    <td>{{ $s->pemilik->nama ?? '-' }}</td>
+                    <td>
+                        @if($s->kategori === 'kas_desa')
+                            {{ $s->pemilik->nama ?? '-' }}
+                            <div style="font-size: 8px; color: #555;">{{ $s->status_pemanfaatan }}</div>
+                        @else
+                            {{ $s->pemilik->nama ?? '-' }}
+                        @endif
+                    </td>
                     <td>{{ $s->jenis_hak->nama ?? '-' }}</td>
                     <td>{{ $s->status->nama ?? '-' }}</td>
                     <td>{{ $s->desa->dusun ?? '-' }}</td>
-                    <td>{{ $s->created_at->format('d/m/Y') }}</td>
                 </tr>
             @empty
                 <tr>

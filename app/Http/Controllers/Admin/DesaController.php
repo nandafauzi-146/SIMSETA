@@ -40,7 +40,7 @@ class DesaController extends Controller
         ]);
 
         return redirect()->route('admin.desa.index')
-            ->with('success', 'Desa berhasil ditambahkan.');
+            ->with('success', 'Dukuh berhasil ditambahkan.');
     }
 
     public function edit(Desa $desa)
@@ -60,7 +60,7 @@ class DesaController extends Controller
         ]);
 
         return redirect()->route('admin.desa.index')
-            ->with('success', 'Desa berhasil diperbarui.');
+            ->with('success', 'Dukuh berhasil diperbarui.');
     }
 
     public function destroy(Desa $desa)
@@ -68,6 +68,6 @@ class DesaController extends Controller
         $desa->delete();
 
         return redirect()->route('admin.desa.index')
-            ->with('success', 'Desa berhasil dihapus.');
+            ->with('success', 'Dukuh berhasil dihapus.');
     }
 }

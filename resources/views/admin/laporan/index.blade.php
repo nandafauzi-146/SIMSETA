@@ -7,17 +7,26 @@
 <div class="space-y-6">
     <div class="rounded-[2rem] border border-[var(--primary)]/15 bg-white p-6 shadow-lg">
         <h2 class="text-xl font-semibold text-[var(--text)] mb-4">Filter Laporan</h2>
-        <form method="GET" action="{{ route('admin.laporan.index') }}" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <form method="GET" action="{{ route('admin.laporan.index') }}" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <div>
-                <label class="block text-sm font-semibold text-[var(--text-muted)] mb-1">Dusun</label>
+                <label class="block text-sm font-semibold text-[var(--text-muted)] mb-1">Dukuh</label>
                 <select name="desa_id"
                     class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/10 focus:border-[var(--primary)]">
-                    <option value="">Semua Dusun</option>
+                    <option value="">Semua Dukuh</option>
                     @foreach($desas as $d)
                         <option value="{{ $d->id }}" {{ request('desa_id') == $d->id ? 'selected' : '' }}>
-                            {{ $d->dusun }}
+                            {{ $d->dusun ?: $d->nama }}
                         </option>
                     @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-[var(--text-muted)] mb-1">Kategori</label>
+                <select name="kategori"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/10 focus:border-[var(--primary)]">
+                    <option value="">Semua Kategori</option>
+                    <option value="masyarakat" {{ request('kategori') == 'masyarakat' ? 'selected' : '' }}>Tanah Pribadi</option>
+                    <option value="kas_desa" {{ request('kategori') == 'kas_desa' ? 'selected' : '' }}>Tanah Kas Desa (TKD)</option>
                 </select>
             </div>
             <div>
@@ -42,7 +51,7 @@
                     class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/10 focus:border-[var(--primary)]"
                     placeholder="999999">
             </div>
-            <div class="sm:col-span-2 lg:col-span-4 flex gap-3">
+            <div class="sm:col-span-2 lg:col-span-5 flex gap-3">
                 <button type="submit"
                     class="rounded-xl bg-[var(--primary)] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[var(--primary-dark)] transition">
                     <i class="fas fa-search mr-2"></i>Tampilkan
@@ -79,12 +88,13 @@
                     <thead>
                         <tr class="border-b border-gray-200">
                             <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">No</th>
+                            <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">Kategori</th>
                             <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">Alas Hak</th>
                             <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">Luas (M²)</th>
                             <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">Pemilik</th>
                             <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">Jenis Hak</th>
                             <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">Status</th>
-                            <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">Dusun</th>
+                            <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">Dukuh</th>
                             <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">Tgl Input</th>
                         </tr>
                     </thead>
@@ -92,9 +102,21 @@
                         @foreach($sertifikats as $s)
                             <tr class="border-b border-gray-100 hover:bg-gray-50">
                                 <td class="py-3 px-2">{{ $loop->iteration }}</td>
+                                <td class="py-3 px-2">
+                                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold {{ $s->kategori === 'kas_desa' ? 'bg-amber-55 bg-amber-50 text-amber-700 border border-amber-200' : 'bg-green-50 text-green-700 border border-green-200' }}">
+                                        {{ $s->kategori_label }}
+                                    </span>
+                                </td>
                                 <td class="py-3 px-2 font-medium">{{ $s->nomor_sertifikat }}</td>
                                 <td class="py-3 px-2">{{ number_format($s->luas, 0, ',', '.') }}</td>
-                                <td class="py-3 px-2">{{ $s->pemilik->nama ?? '-' }}</td>
+                                <td class="py-3 px-2">
+                                    @if($s->kategori === 'kas_desa')
+                                        <span class="font-semibold text-slate-700">{{ $s->pemilik->nama ?? '-' }}</span>
+                                        <span class="block text-xs text-slate-500">{{ $s->status_pemanfaatan }}</span>
+                                    @else
+                                        <span>{{ $s->pemilik->nama ?? '-' }}</span>
+                                    @endif
+                                </td>
                                 <td class="py-3 px-2">{{ $s->jenis_hak->nama ?? '-' }}</td>
                                 <td class="py-3 px-2">
                                     <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold
@@ -111,7 +133,7 @@
                 </table>
             </div>
         </div>
-    @elseif(request()->anyFilled(['desa_id', 'tahun', 'luas_min', 'luas_max']))
+    @elseif(request()->anyFilled(['desa_id', 'tahun', 'kategori', 'luas_min', 'luas_max']))
         <div class="rounded-[2rem] border border-gray-200 bg-white p-8 text-center shadow-lg">
             <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
             <p class="text-gray-600">Tidak ada data yang sesuai dengan filter yang dipilih.</p>

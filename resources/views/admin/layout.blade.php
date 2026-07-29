@@ -93,7 +93,8 @@
 
         @media (min-width: 768px) {
             .main-content-area {
-                margin-left: 14rem; /* selebar w-56 sidebar */
+                margin-left: 14rem;
+                /* selebar w-56 sidebar */
             }
         }
     </style>
@@ -121,18 +122,6 @@
                 </button>
             </div>
 
-            {{-- User card --}}
-            <div class="relative px-4 pb-4">
-                <div class="flex items-center gap-3 rounded-2xl bg-white/10 p-3">
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20 text-sm font-bold">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                    </div>
-                    <div class="min-w-0">
-                        <h2 class="truncate text-sm font-semibold text-white">{{ auth()->user()->name }}</h2>
-                        <p class="text-xs text-white/65">{{ auth()->user()->getRoleNames()->first() ?: 'Staff' }}</p>
-                    </div>
-                </div>
-            </div>
 
             {{-- Nav --}}
             <nav class="relative flex-1 space-y-4 overflow-y-auto px-3 pb-3">
@@ -149,7 +138,7 @@
                 <a href="{{ route('admin.desa.index') }}"
                     class="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition {{ request()->routeIs('admin.desa.*') ? 'bg-white/20 text-white shadow-md' : 'text-white/75 hover:bg-white/10 hover:text-white' }}">
                     <i class="fas fa-map-marked-alt w-4 text-center text-sm"></i>
-                    Dusun
+                    Dukuh
                 </a>
                 <a href="{{ route('admin.laporan.index') }}"
                     class="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition {{ request()->routeIs('admin.laporan.*') ? 'bg-white/20 text-white shadow-md' : 'text-white/75 hover:bg-white/10 hover:text-white' }}">
@@ -164,7 +153,8 @@
                     </a>
                 @endif
 
-                <p class="px-3.5 pb-1 pt-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Lainnya</p>
+                <p class="px-3.5 pb-1 pt-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Lainnya
+                </p>
                 <a href="{{ route('admin.settings.index') }}"
                     class="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition {{ request()->routeIs('admin.settings.*') ? 'bg-white/20 text-white shadow-md' : 'text-white/75 hover:bg-white/10 hover:text-white' }}">
                     <i class="fas fa-cog w-4 text-center text-sm"></i>
@@ -172,9 +162,24 @@
                 </a>
             </nav>
 
+            {{-- User card --}}
+            <div class="relative px-4 pb-4">
+                <div class="flex items-center gap-3 rounded-2xl bg-white/10 p-3">
+                    <div
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20 text-sm font-bold">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+                    </div>
+                    <div class="min-w-0">
+                        <h2 class="truncate text-sm font-semibold text-white">{{ auth()->user()->name }}</h2>
+                        <p class="text-xs text-white/65">{{ auth()->user()->getRoleNames()->first() ?: 'Staff' }}</p>
+                    </div>
+                </div>
+            </div>
+
             {{-- Footer --}}
             <div class="relative mt-auto border-t border-white/10 p-3">
-                <button type="button" onclick="window.showLogoutModal = true; document.getElementById('logout-modal').classList.remove('hidden')"
+                <button type="button"
+                    onclick="window.showLogoutModal = true; document.getElementById('logout-modal').classList.remove('hidden')"
                     class="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm font-semibold text-white/90 transition hover:bg-white/10">
                     <i class="fas fa-sign-out-alt w-4 text-center text-sm"></i>Keluar
                 </button>
@@ -199,25 +204,18 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-3 text-[var(--text)]">
-                        <span class="hidden sm:inline font-semibold text-sm text-[#1F2937]">{{ now()->format('d M Y H:i') }}</span>
+                        <span
+                            class="hidden sm:inline font-semibold text-sm text-[#1F2937]">{{ now()->format('d M Y H:i') }}</span>
                     </div>
                 </div>
             </div>
 
             <main class="min-h-[calc(100vh-80px)] px-4 py-6 sm:px-6 lg:px-8">
-                @if ($message = session('success'))
-                    <div class="mb-4 rounded-3xl border border-[#66BB6A]/30 bg-[#66BB6A]/10 px-5 py-4 text-[#1F2937] shadow-sm"
-                        x-data="{ show: true }" x-show="show" @click.away="show = false">
-                        {{ $message }}
-                    </div>
-                @endif
-
-                @if ($message = session('error'))
-                    <div class="mb-4 rounded-3xl border border-red-200 bg-red-50 px-5 py-4 text-red-800 shadow-sm"
-                        x-data="{ show: true }" x-show="show" @click.away="show = false">
-                        {{ $message }}
-                    </div>
-                @endif
+                @foreach (['success', 'error', 'warning', 'info'] as $type)
+                    @if ($message = session($type))
+                        <x-alert :type="$type">{{ $message }}</x-alert>
+                    @endif
+                @endforeach
 
                 @yield('content')
             </main>
@@ -225,7 +223,8 @@
     </div>
 
     {{-- Logout Modal --}}
-    <div id="logout-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+    <div id="logout-modal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
         onclick="if(event.target===this) document.getElementById('logout-modal').classList.add('hidden')">
         <div class="mx-4 w-full max-w-xs animate-modal rounded-xl bg-white p-5 shadow-2xl">
             <div class="flex flex-col items-center text-center">
@@ -255,9 +254,17 @@
         .animate-modal {
             animation: modalIn 0.2s ease-out;
         }
+
         @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
     </style>
 

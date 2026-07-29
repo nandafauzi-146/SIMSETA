@@ -19,12 +19,6 @@
                         class="w-full rounded-2xl border border-slate-200 bg-[var(--bg)]/50 px-4 py-3 text-sm">
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-semibold text-[var(--text)]">Dusun</label>
-                    <input type="text" name="dusun"
-                        value="{{ old('dusun', $desa->dusun ?? '') }}"
-                        class="w-full rounded-2xl border border-slate-200 bg-[var(--bg)]/50 px-4 py-3 text-sm">
-                </div>
-                <div>
                     <label class="mb-2 block text-sm font-semibold text-[var(--text)]">Kecamatan</label>
                     <input type="text" name="kecamatan"
                         value="{{ old('kecamatan', \App\Models\Setting::where('key', 'kecamatan')->value('value') ?? '') }}"

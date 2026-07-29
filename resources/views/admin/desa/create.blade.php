@@ -1,11 +1,11 @@
 @extends('admin.layout')
 
-@section('title', 'Tambah Desa')
+@section('title', 'Tambah Dukuh')
 
 @section('content')
     <div class="mx-auto max-w-3xl">
-        <x-admin.page-header title="Tambah Desa Baru"
-            description="Tambahkan desa untuk digunakan pada data aset tanah." />
+        <x-admin.page-header title="Tambah Dukuh Baru"
+            description="Tambahkan dukuh untuk digunakan pada data aset tanah." />
 
         <x-admin.form-card>
             <form method="POST" action="{{ route('admin.desa.store') }}" class="space-y-6">
@@ -18,9 +18,9 @@
                 </div>
 
                 <div>
-                    <label class="mb-2 block text-sm font-semibold text-[var(--text)]">Dusun *</label>
+                    <label class="mb-2 block text-sm font-semibold text-[var(--text)]">Dukuh *</label>
                     <input type="text" name="dusun" required
-                        placeholder="Masukkan nama dusun"
+                        placeholder="Masukkan nama dukuh"
                         class="w-full rounded-2xl border border-slate-200 bg-[var(--bg)]/50 px-4 py-3 text-sm text-[var(--text)] focus:border-[var(--primary)] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/10 transition @error('dusun') border-red-500 @enderror"
                         value="{{ old('dusun') }}">
                     @error('dusun')

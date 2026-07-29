@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Cache;
 
 class PenggunaController extends Controller
 {
@@ -34,7 +35,10 @@ class PenggunaController extends Controller
      */
     public function create()
     {
-        $roles = Role::all();
+        $roles = Cache::remember('roles_all', 3600, function () {
+            return Role::all()->toArray();
+        });
+        $roles = collect($roles)->map(fn($r) => (object) $r);
         return view('admin.pengguna.create', compact('roles'));
     }
 
@@ -46,9 +50,9 @@ class PenggunaController extends Controller
         $validated = $request->validated();
 
         $user = User::create([
-            'name'      => $validated['name'],
-            'email'     => $validated['email'],
-            'password'  => Hash::make($validated['password']),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
@@ -60,44 +64,49 @@ class PenggunaController extends Controller
     /**
      * Display the specified user.
      */
-    public function show(User $user)
+    public function show(User $pengguna)
     {
+        $user = $pengguna;
         return view('admin.pengguna.show', compact('user'));
     }
 
     /**
      * Show the form for editing the specified user.
      */
-    public function edit(User $user)
+    public function edit(User $pengguna)
     {
-        $roles = Role::all();
+        $user = $pengguna;
+        $roles = Cache::remember('roles_all', 3600, function () {
+            return Role::all()->toArray();
+        });
+        $roles = collect($roles)->map(fn($r) => (object) $r);
         return view('admin.pengguna.edit', compact('user', 'roles'));
     }
 
     /**
      * Update the specified user in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, User $pengguna)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id . '|max:255',
+            'email' => 'required|email|unique:users,email,' . $pengguna->id . '|max:255',
             'password' => 'nullable|string|min:8|confirmed',
             'role' => 'required|exists:roles,name',
             'is_active' => 'boolean',
         ]);
 
-        $user->update([
+        $pengguna->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
         if ($validated['password']) {
-            $user->update(['password' => Hash::make($validated['password'])]);
+            $pengguna->update(['password' => Hash::make($validated['password'])]);
         }
 
-        $user->syncRoles([$validated['role']]);
+        $pengguna->syncRoles([$validated['role']]);
 
         return redirect()->route('admin.pengguna.index')->with('success', 'Pengguna berhasil diperbarui.');
     }
@@ -105,13 +114,13 @@ class PenggunaController extends Controller
     /**
      * Remove the specified user from storage.
      */
-    public function destroy(User $user)
+    public function destroy(User $pengguna)
     {
-        if (auth()->id() === $user->id) {
+        if (auth()->id() === $pengguna->id) {
             return redirect()->route('admin.pengguna.index')->with('error', 'Tidak dapat menghapus akun Anda sendiri.');
         }
 
-        $user->delete();
+        $pengguna->delete();
 
         return redirect()->route('admin.pengguna.index')->with('success', 'Pengguna berhasil dihapus.');
     }

@@ -38,6 +38,7 @@ Route::middleware(['auth', 'verified', 'can.access.admin'])->group(function () {
         });
 
         Route::resource('sertifikat.dokumen', DokumenController::class)
+            ->parameters(['dokumen' => 'dokumen'])
             ->except(['show', 'edit', 'update', 'create']);
         Route::get('sertifikat/{sertifikat}/dokumen/{dokumen}/download', [DokumenController::class, 'download'])
             ->name('sertifikat.dokumen.download');

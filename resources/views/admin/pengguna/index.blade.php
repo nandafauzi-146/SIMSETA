@@ -14,13 +14,18 @@
     <div class="rounded-[2rem] border border-[var(--primary)]/15 bg-white shadow-lg overflow-hidden">
         <div class="border-b border-slate-100 p-6 bg-gradient-to-r from-[var(--bg)] to-white">
             <form method="GET" action="{{ route('admin.pengguna.index') }}" class="grid gap-3 sm:grid-cols-[1fr_auto]">
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--text-muted)]">
+                <div class="relative" x-data="{ query: '{{ request('search') }}' }">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--text-muted)] pointer-events-none">
                         <i class="fas fa-search"></i>
                     </span>
-                    <input type="text" name="search" value="{{ request('search') }}"
+                    <input type="text" name="search" x-model="query"
                         placeholder="Cari nama atau email pengguna..."
-                        class="w-full rounded-3xl border border-slate-200 bg-white pl-11 pr-4 py-3 text-sm text-[var(--text)] focus:border-[var(--primary)] focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/10 transition">
+                        class="w-full rounded-3xl border border-slate-200 bg-white pl-11 pr-10 py-3 text-sm text-[var(--text)] focus:border-[var(--primary)] focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/10 transition">
+                    <button type="button" x-show="query.length > 0" @click="query = ''; $nextTick(() => $el.closest('form').submit())" x-cloak
+                        class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-red-500 transition"
+                        title="Hapus dan kembali ke awal">
+                        <i class="fas fa-times-circle text-base"></i>
+                    </button>
                 </div>
                 <button type="submit"
                     class="inline-flex items-center justify-center rounded-3xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--primary-dark)] shadow-sm">
@@ -66,7 +71,7 @@
                                     </a>
                                     @if (auth()->id() !== $user->id)
                                         <form method="POST" action="{{ route('admin.pengguna.destroy', $user) }}" class="inline"
-                                            onsubmit="return confirm('Yakin ingin menghapus?')">
+                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?')">
                                             @csrf @method('DELETE')
                                             <button type="submit"
                                                 class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-100 hover:text-red-800"

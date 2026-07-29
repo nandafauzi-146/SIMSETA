@@ -7,12 +7,15 @@ use App\Models\Dokumen;
 use App\Models\Sertifikat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+
 
 class DokumenController extends Controller
 {
     public function index(Sertifikat $sertifikat)
     {
-        $dokumens = $sertifikat->dokumens()->latest()->get();
+        // paginate dokumen untuk menghindari memuat banyak file sekaligus
+        $dokumens = $sertifikat->dokumens()->latest()->paginate(12);
         return view('admin.dokumen.index', compact('sertifikat', 'dokumens'));
     }
 
@@ -29,9 +32,12 @@ class DokumenController extends Controller
         $originalName = $file->getClientOriginalName();
         $path = $file->store('dokumen/' . $sertifikat->id, 'public');
 
+        // Ensure nama_file is never null: prefer explicit input, then original filename, then stored basename
+        $namaFile = $request->filled('nama_file') ? $request->input('nama_file') : ($originalName ?? pathinfo($path, PATHINFO_BASENAME));
+
         $dokumen = Dokumen::create([
             'sertifikat_id' => $sertifikat->id,
-            'nama_file' => $request->input('nama_file', $originalName),
+            'nama_file' => $namaFile,
             'jenis_file' => $file->getClientOriginalExtension(),
             'path' => $path,
         ]);
@@ -44,8 +50,23 @@ class DokumenController extends Controller
     {
         $this->authorize('update', $sertifikat);
 
-        Storage::disk('public')->delete($dokumen->path);
+        // Log for debugging whether delete was reached and what path exists
+        Log::info('Dokumen destroy called', ['id' => $dokumen->id, 'path' => $dokumen->path]);
+
+        // Only attempt to delete the file if a valid path string exists
+        if (!empty($dokumen->path) && is_string($dokumen->path)) {
+            if (Storage::disk('public')->exists($dokumen->path)) {
+                Storage::disk('public')->delete($dokumen->path);
+                Log::info('Dokumen file deleted from storage', ['path' => $dokumen->path]);
+            } else {
+                Log::warning('Dokumen file not found in storage', ['path' => $dokumen->path]);
+            }
+        } else {
+            Log::warning('Dokumen path empty or invalid', ['path' => $dokumen->path]);
+        }
+
         $dokumen->delete();
+        Log::info('Dokumen model deleted', ['id' => $dokumen->id]);
 
         return redirect()->route('admin.sertifikat.show', $sertifikat)
             ->with('success', 'Dokumen berhasil dihapus.');
@@ -53,6 +74,6 @@ class DokumenController extends Controller
 
     public function download(Sertifikat $sertifikat, Dokumen $dokumen)
     {
-        return Storage::disk('public')->download($dokumen->path, $dokumen->nama_file);
+        return response()->download(Storage::disk('public')->path($dokumen->path), $dokumen->nama_file);
     }
 }
