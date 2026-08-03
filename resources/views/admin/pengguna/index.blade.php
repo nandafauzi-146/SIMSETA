@@ -35,29 +35,29 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-100 text-sm">
+            <table class="w-full min-w-[640px] divide-y divide-slate-100 text-sm">
                 <thead class="bg-[var(--bg)] text-[var(--text-muted)]">
                     <tr>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Nama</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Email</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Role</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Status</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Aksi</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Nama</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Email</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Role</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Status</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white">
                     @forelse ($users as $user)
                         <tr class="hover:bg-[var(--bg)]/50 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-[var(--text)]">{{ $user->name }}</td>
-                            <td class="px-6 py-4 text-[var(--text-muted)]">{{ $user->email }}</td>
-                            <td class="px-6 py-4 text-[var(--text-muted)]">{{ $user->roles->pluck('name')->join(', ') ?: '-' }}</td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3 sm:px-6 sm:py-4 font-semibold text-[var(--text)]">{{ $user->name }}</td>
+                            <td class="px-4 py-3 sm:px-6 sm:py-4 text-[var(--text-muted)]">{{ $user->email }}</td>
+                            <td class="px-4 py-3 sm:px-6 sm:py-4 text-[var(--text-muted)]">{{ $user->roles->pluck('name')->join(', ') ?: '-' }}</td>
+                            <td class="px-4 py-3 sm:px-6 sm:py-4">
                                 <span
                                     class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $user->is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200' }}">
                                     {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3 sm:px-6 sm:py-4">
                                 <div class="flex items-center gap-2">
                                     <a href="{{ route('admin.pengguna.show', $user) }}"
                                         class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--bg)] text-[var(--text-muted)] transition hover:bg-[var(--primary)]/10 hover:text-[var(--primary)]"

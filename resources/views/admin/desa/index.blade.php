@@ -36,22 +36,22 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-100 text-sm">
+            <table class="w-full min-w-[560px] divide-y divide-slate-100 text-sm">
                 <thead class="bg-[var(--bg)] text-[var(--text-muted)]">
                     <tr>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em] w-16">No</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Nama Dukuh</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Desa</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Aksi</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em] w-16">No</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Nama Dukuh</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Desa</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white">
                     @forelse ($desas as $desa)
                         <tr class="hover:bg-[var(--bg)]/50 transition-colors">
-                            <td class="px-6 py-4 text-[var(--text-muted)]">{{ $loop->iteration }}</td>
-                            <td class="px-6 py-4 font-semibold text-[var(--text)]">{{ $desa->dusun ?: '-' }}</td>
-                            <td class="px-6 py-4 text-[var(--text-muted)]">{{ $desa->nama }}</td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3 sm:px-6 sm:py-4 text-[var(--text-muted)]">{{ $loop->iteration }}</td>
+                            <td class="px-4 py-3 sm:px-6 sm:py-4 font-semibold text-[var(--text)]">{{ $desa->dusun ?: '-' }}</td>
+                            <td class="px-4 py-3 sm:px-6 sm:py-4 text-[var(--text-muted)]">{{ $desa->nama }}</td>
+                            <td class="px-4 py-3 sm:px-6 sm:py-4">
                                 <div class="flex items-center gap-2">
                                     <a href="{{ route('admin.desa.edit', $desa) }}"
                                         class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--bg)] text-[var(--text-muted)] transition hover:bg-[var(--accent)]/15 hover:text-[var(--accent)]"

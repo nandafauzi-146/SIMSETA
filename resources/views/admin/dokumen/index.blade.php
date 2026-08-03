@@ -42,17 +42,17 @@
             @else
                 <div class="divide-y divide-slate-100">
                     @foreach($dokumens as $d)
-                        <div class="flex items-center justify-between py-3">
-                            <div class="flex items-center gap-3">
+                        <div class="flex items-center justify-between gap-3 py-3">
+                            <div class="flex min-w-0 items-center gap-3">
                                 <i class="fas fa-file text-lg text-[var(--primary)]"></i>
-                                <div>
-                                    <p class="text-sm font-medium text-[var(--text)]">{{ $d->nama_file }}</p>
+                                <div class="min-w-0">
+                                    <p class="truncate text-sm font-medium text-[var(--text)]">{{ $d->nama_file }}</p>
                                     <p class="text-xs text-[var(--text-muted)]">{{ strtoupper($d->jenis_file) }} —
                                         {{ $d->created_at->format('d/m/Y') }}
                                     </p>
                                 </div>
                             </div>
-                            <div class="flex gap-2">
+                            <div class="flex shrink-0 gap-2">
                                 <a href="{{ route('admin.sertifikat.dokumen.download', [$sertifikat, $d]) }}"
                                     class="rounded-xl bg-blue-50 px-3 py-2 text-sm text-blue-600 hover:bg-blue-100 transition">
                                     <i class="fas fa-download"></i>

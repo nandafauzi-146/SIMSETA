@@ -96,15 +96,15 @@
                 </div>
                 <div class="grid grid-cols-3 gap-3">
                     <div class="rounded-xl bg-[var(--bg)] p-3 text-center">
-                        <p class="text-2xl font-bold text-[var(--primary)]">{{ number_format($masyarakat['total']) }}</p>
+                        <p class="text-xl font-bold text-[var(--primary)] sm:text-2xl">{{ number_format($masyarakat['total']) }}</p>
                         <p class="mt-1 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Total Bidang</p>
                     </div>
                     <div class="rounded-xl bg-[var(--bg)] p-3 text-center">
-                        <p class="text-2xl font-bold text-[var(--primary)]">{{ number_format($masyarakat['luas'], 0, ',', '.') }}</p>
+                        <p class="text-xl font-bold text-[var(--primary)] sm:text-2xl">{{ number_format($masyarakat['luas'], 0, ',', '.') }}</p>
                         <p class="mt-1 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Luas (M²)</p>
                     </div>
                     <div class="rounded-xl bg-[var(--bg)] p-3 text-center">
-                        <p class="text-2xl font-bold text-emerald-600">{{ number_format($masyarakat['aktif']) }}</p>
+                        <p class="text-xl font-bold text-emerald-600 sm:text-2xl">{{ number_format($masyarakat['aktif']) }}</p>
                         <p class="mt-1 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Aktif</p>
                     </div>
                 </div>
@@ -130,11 +130,11 @@
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="rounded-xl bg-[var(--accent)]/5 p-3 text-center">
-                        <p class="text-2xl font-bold text-[var(--accent)]">{{ number_format($kasDesa['total']) }}</p>
+                        <p class="text-xl font-bold text-[var(--accent)] sm:text-2xl">{{ number_format($kasDesa['total']) }}</p>
                         <p class="mt-1 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Total Bidang</p>
                     </div>
                     <div class="rounded-xl bg-[var(--accent)]/5 p-3 text-center">
-                        <p class="text-2xl font-bold text-[var(--accent)]">{{ number_format($kasDesa['luas'], 0, ',', '.') }}</p>
+                        <p class="text-xl font-bold text-[var(--accent)] sm:text-2xl">{{ number_format($kasDesa['luas'], 0, ',', '.') }}</p>
                         <p class="mt-1 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Luas (M²)</p>
                     </div>
                 </div>

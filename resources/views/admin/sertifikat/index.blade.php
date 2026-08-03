@@ -78,28 +78,28 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-100 text-sm">
+            <table class="w-full min-w-[760px] divide-y divide-slate-100 text-sm">
                 <thead class="bg-[var(--bg)] text-[var(--text-muted)]">
                     <tr>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Nomor Sertifikat / Alas Hak</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Kategori</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Pemilik</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Luas (M²)</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Status</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Dukuh</th>
-                        <th class="px-6 py-4 text-left font-semibold uppercase tracking-[0.12em]">Aksi</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Nomor Sertifikat / Alas Hak</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Kategori</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Pemilik</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Luas (M²)</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Status</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Dukuh</th>
+                        <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white">
                     @forelse ($sertifikats as $sertifikat)
                         <tr class="hover:bg-[var(--bg)]/50 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-[var(--text)]">{{ $sertifikat->nomor_sertifikat }}</td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3 sm:px-6 sm:py-4 font-semibold text-[var(--text)]">{{ $sertifikat->nomor_sertifikat }}</td>
+                            <td class="px-4 py-3 sm:px-6 sm:py-4">
                                 <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $sertifikat->kategori === 'kas_desa' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-green-50 text-green-700 border border-green-200' }}">
                                     {{ $sertifikat->kategori_label }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3 sm:px-6 sm:py-4">
                                 @if($sertifikat->kategori === 'kas_desa')
                                     <span class="font-semibold text-slate-700">{{ $sertifikat->pemilik->nama ?? '-' }}</span>
                                     <span class="block text-xs text-slate-500">{{ $sertifikat->status_pemanfaatan }}</span>
@@ -107,10 +107,10 @@
                                     <span class="font-medium text-[var(--text)]">{{ $sertifikat->pemilik->nama ?? '-' }}</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 font-medium text-[var(--text)]">
+                            <td class="px-4 py-3 sm:px-6 sm:py-4 font-medium text-[var(--text)]">
                                 {{ number_format((float) $sertifikat->luas, 0, ',', '.') }} m²
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3 sm:px-6 sm:py-4">
                                 <span
                                     class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $sertifikat->trashed() ? 'bg-red-50 text-red-600 border border-red-200' : ($sertifikat->status->nama === 'Aktif' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20') }}">
                                     @if ($sertifikat->trashed())
@@ -119,10 +119,10 @@
                                     {{ $sertifikat->trashed() ? 'Dihapus' : ($sertifikat->status->nama ?? '-') }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-[var(--text-muted)]">
+                            <td class="px-4 py-3 sm:px-6 sm:py-4 text-[var(--text-muted)]">
                                 {{ $sertifikat->desa->dusun ?? '-' }}
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3 sm:px-6 sm:py-4">
                                 <div class="flex items-center gap-2">
                                     <a href="{{ route('admin.sertifikat.show', $sertifikat) }}"
                                         class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--bg)] text-[var(--text-muted)] transition hover:bg-[var(--primary)]/10 hover:text-[var(--primary)]"

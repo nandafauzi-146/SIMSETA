@@ -66,12 +66,12 @@
 
     @if($sertifikats->isNotEmpty())
         <div class="rounded-[2rem] border border-[var(--primary)]/15 bg-white p-6 shadow-lg">
-            <div class="flex items-center justify-between gap-4 mb-4">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                 <div>
                     <h2 class="text-xl font-semibold text-[var(--text)]">Hasil Laporan</h2>
                     <p class="text-sm text-[var(--text-muted)]">{{ $sertifikats->count() }} data ditemukan</p>
                 </div>
-                <div class="flex gap-3">
+                <div class="flex flex-wrap gap-3">
                     <a href="{{ route('admin.laporan.export-pdf', request()->query()) }}"
                         class="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition">
                         <i class="fas fa-file-pdf mr-2"></i>PDF
@@ -84,7 +84,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
+                <table class="w-full min-w-[800px] text-sm">
                     <thead>
                         <tr class="border-b border-gray-200">
                             <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">No</th>
