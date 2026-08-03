@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="Cek status sertifikat tanah Desa Tegalmulyo secara online. Portal publik layanan informasi pertanahan resmi Pemerintah Desa Tegalmulyo.">
     <title>SIMSETA - Sistem Informasi Manajemen Sertifikat Tanah Desa Tegalmulyo</title>
+    <link rel="icon" type="image/webp" href="{{ asset('Logo-Simseta.webp') }}">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800" rel="stylesheet" />

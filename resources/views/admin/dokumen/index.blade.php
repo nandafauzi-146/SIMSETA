@@ -58,10 +58,9 @@
                                     <i class="fas fa-download"></i>
                                 </a>
                                 <form method="POST" action="{{ route('admin.sertifikat.dokumen.destroy', [$sertifikat, $d]) }}"
-                                    x-data="{ open: false }"
-                                    @submit.prevent="open = true">
+                                    x-data="{ open: false }">
                                     @csrf @method('DELETE')
-                                    <button type="submit"
+                                    <button type="button" @click="open = true"
                                         class="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600 hover:bg-red-100 transition">
                                         <i class="fas fa-trash"></i>
                                     </button>

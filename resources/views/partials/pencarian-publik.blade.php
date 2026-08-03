@@ -107,6 +107,7 @@
             sertifikat: null,
             showTurnstile: false,
             turnstileWidgetId: null,
+            siteKey: '{{ config('services.turnstile.site_key') }}',
             formatLuas(v) {
                 return v ? new Intl.NumberFormat('id-ID').format(v) : '-';
             },
@@ -114,6 +115,12 @@
                 if (this.loading || !this.keyword.trim()) return;
                 this.error = null;
                 this.sertifikat = null;
+
+                if (!this.siteKey) {
+                    this.prosesCari(null);
+                    return;
+                }
+
                 this.showTurnstile = true;
                 var self = this;
                 this.$nextTick(function() {
@@ -122,7 +129,7 @@
                         self.turnstileWidgetId = null;
                     }
                     self.turnstileWidgetId = turnstile.render('#turnstile-container', {
-                        sitekey: '{{ config('services.turnstile.site_key') }}',
+                        sitekey: self.siteKey,
                         callback: function(token) {
                             self.prosesCari(token);
                         },
@@ -144,6 +151,10 @@
             prosesCari: function(token) {
                 var self = this;
                 self.loading = true;
+                var payload = { keyword: self.keyword };
+                if (token) {
+                    payload['cf-turnstile-response'] = token;
+                }
                 fetch("{{ route('public.search') }}", {
                     method: 'POST',
                     headers: {
@@ -151,10 +162,7 @@
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
-                    body: JSON.stringify({
-                        keyword: self.keyword,
-                        'cf-turnstile-response': token
-                    })
+                    body: JSON.stringify(payload)
                 })
                 .then(function(res) {
                     if (!res.ok) {
