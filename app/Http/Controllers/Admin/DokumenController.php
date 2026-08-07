@@ -14,6 +14,8 @@ class DokumenController extends Controller
 {
     public function index(Sertifikat $sertifikat)
     {
+        $this->authorize('view', $sertifikat);
+
         // paginate dokumen untuk menghindari memuat banyak file sekaligus
         $dokumens = $sertifikat->dokumens()->latest()->paginate(12);
         return view('admin.dokumen.index', compact('sertifikat', 'dokumens'));
@@ -29,6 +31,12 @@ class DokumenController extends Controller
         ]);
 
         $file = $request->file('file');
+        $ext = strtolower($file->getClientOriginalExtension());
+        $allowedExts = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'];
+
+        if (!in_array($ext, $allowedExts)) {
+            return redirect()->back()->withErrors(['file' => 'Ekstensi file tidak diizinkan demi alasan keamanan.']);
+        }
         $originalName = $file->getClientOriginalName();
         $path = $file->store('dokumen/' . $sertifikat->id, 'public');
 
@@ -74,6 +82,13 @@ class DokumenController extends Controller
 
     public function download(Sertifikat $sertifikat, Dokumen $dokumen)
     {
+        $this->authorize('view', $sertifikat);
+
+        // Pastikan dokumen memang milik sertifikat ini (mencegah IDOR)
+        if ($dokumen->sertifikat_id !== $sertifikat->id) {
+            abort(404);
+        }
+
         return response()->download(Storage::disk('public')->path($dokumen->path), $dokumen->nama_file);
     }
 }

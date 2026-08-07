@@ -84,10 +84,12 @@ class LaporanController extends Controller
 
     public function exportExcel(Request $request): StreamedResponse
     {
-        $sertifikats = $this->getFilteredData($request);
+        // Gunakan chunkById() dengan eager loading per chunk untuk RAM rendah & tanpa N+1
+        // cursor() tidak kompatibel dengan with() — relasi tidak diload otomatis
+        $query = $this->getFilteredQuery($request);
         $filename = 'laporan-aset-tanah-' . now()->format('Y-m-d') . '.xlsx';
 
-        return new StreamedResponse(function () use ($sertifikats) {
+        return new StreamedResponse(function () use ($query) {
             $writer = new Writer();
             $writer->openToFile('php://output');
 
@@ -141,25 +143,28 @@ class LaporanController extends Controller
             );
 
             $no = 1;
-            foreach ($sertifikats as $s) {
-                $style = $no % 2 === 0 ? $evenStyle : $oddStyle;
+            // chunkById: load 200 baris per iterasi dengan eager loading — aman & efisien memori
+            $query->with(['pemilik', 'jenis_hak', 'status', 'desa'])->chunkById(200, function ($chunk) use ($writer, $evenStyle, $oddStyle, &$no) {
+                foreach ($chunk as $s) {
+                    $style = $no % 2 === 0 ? $evenStyle : $oddStyle;
 
-                $row = Row::fromValuesWithStyle([
-                    $no++,
-                    $s->kategori_label,
-                    $s->nomor_sertifikat,
-                    $s->nib ?? '-',
-                    number_format($s->luas, 0, ',', '.'),
-                    $s->pemilik->nama ?? '-',
-                    $s->status_pemanfaatan ?? '-',
-                    $s->jenis_hak->nama ?? '-',
-                    $s->status->nama ?? '-',
-                    $s->desa->dusun ?? '-',
-                    $s->alamat ?? '-',
-                    $s->created_at->format('d/m/Y'),
-                ], $style, 22);
-                $writer->addRow($row);
-            }
+                    $row = Row::fromValuesWithStyle([
+                        $no++,
+                        $s->kategori_label,
+                        $s->nomor_sertifikat,
+                        $s->nib ?? '-',
+                        number_format($s->luas, 0, ',', '.'),
+                        $s->pemilik->nama ?? '-',
+                        $s->status_pemanfaatan ?? '-',
+                        $s->jenis_hak->nama ?? '-',
+                        $s->status->nama ?? '-',
+                        $s->desa->dusun ?? '-',
+                        $s->alamat ?? '-',
+                        $s->created_at->format('d/m/Y'),
+                    ], $style, 22);
+                    $writer->addRow($row);
+                }
+            });
 
             $writer->close();
         }, Response::HTTP_OK, [
@@ -193,5 +198,37 @@ class LaporanController extends Controller
         }
 
         return $query->orderBy('created_at', 'asc')->get();
+    }
+
+    /**
+     * Mengembalikan query builder tanpa eager loading.
+     * Caller yang membutuhkan relasi harus menambahkan with() sendiri.
+     * Ini memungkinkan chunkById() dan cursor() bekerja dengan benar.
+     */
+    private function getFilteredQuery(Request $request)
+    {
+        $query = Sertifikat::query();
+
+        if ($request->filled('desa_id')) {
+            $query->where('desa_id', $request->desa_id);
+        }
+
+        if ($request->filled('tahun')) {
+            $query->whereYear('created_at', $request->tahun);
+        }
+
+        if ($request->filled('kategori')) {
+            $query->where('kategori', $request->kategori);
+        }
+
+        if ($request->filled('luas_min')) {
+            $query->where('luas', '>=', $request->luas_min);
+        }
+
+        if ($request->filled('luas_max')) {
+            $query->where('luas', '<=', $request->luas_max);
+        }
+
+        return $query->orderBy('created_at', 'asc');
     }
 }

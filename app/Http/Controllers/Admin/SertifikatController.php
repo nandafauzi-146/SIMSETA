@@ -10,6 +10,7 @@ use App\Models\Pemilik;
 use App\Models\JenisHakTanah;
 use App\Models\StatusSertifikat;
 use App\Models\Desa;
+use App\Models\PenggunaanTanah;
 use Illuminate\Support\Facades\Cache;
 use App\Traits\UsesYearSql;
 use Illuminate\Http\Request;
@@ -82,6 +83,8 @@ class SertifikatController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Sertifikat::class);
+
         $desas = Cache::remember('desas_all', 3600, function () {
             return Desa::all()->toArray();
         });
@@ -97,9 +100,11 @@ class SertifikatController extends Controller
 
         if ($request->filled('search')) {
             $s = $request->query('search');
-            $query->where(function ($q) use ($s) {
+            // Gunakan JOIN langsung ke tabel pemiliks (lebih efisien dari orWhereHas subquery)
+            $pemilikIds = Pemilik::where('nama', 'like', "%$s%")->pluck('id');
+            $query->where(function ($q) use ($s, $pemilikIds) {
                 $q->where('nomor_sertifikat', 'like', "%$s%")
-                    ->orWhereHas('pemilik', fn($pq) => $pq->where('nama', 'like', "%$s%"));
+                  ->orWhereIn('pemilik_id', $pemilikIds);
             });
         }
 
@@ -113,19 +118,26 @@ class SertifikatController extends Controller
 
     public function create(Request $request)
     {
+        $this->authorize('create', Sertifikat::class);
+
         $desasForForm = Cache::remember('desas_all', 3600, function () {
             return Desa::all()->toArray();
         });
         $desasForForm = collect($desasForForm)->map(fn($d) => is_array($d) ? (object) $d : $d);
 
+        $penggunaanTanahs = PenggunaanTanah::orderBy('nama', 'asc')->get();
+
         return view('admin.sertifikat.create', [
             'desas' => $desasForForm,
             'default_kategori' => $request->query('kategori', 'masyarakat'),
+            'penggunaanTanahs' => $penggunaanTanahs,
         ]);
     }
 
     public function store(StoreSertifikatRequest $request)
     {
+        $this->authorize('create', Sertifikat::class);
+
         $v = $request->validated();
 
         $kategori = $v['kategori'] ?? 'masyarakat';
@@ -189,25 +201,34 @@ class SertifikatController extends Controller
 
     public function show(Sertifikat $sertifikat)
     {
+        $this->authorize('view', $sertifikat);
+
         $sertifikat->load(['pemilik', 'jenis_hak', 'status', 'desa', 'dokumens']);
         return view('admin.sertifikat.show', compact('sertifikat'));
     }
 
     public function edit(Sertifikat $sertifikat)
     {
+        $this->authorize('update', $sertifikat);
+
         $desasForForm = Cache::remember('desas_all', 3600, function () {
             return Desa::all()->toArray();
         });
         $desasForForm = collect($desasForForm)->map(fn($d) => is_array($d) ? (object) $d : $d);
 
+        $penggunaanTanahs = PenggunaanTanah::orderBy('nama', 'asc')->get();
+
         return view('admin.sertifikat.edit', [
             'sertifikat' => $sertifikat->load(['pemilik', 'jenis_hak', 'status', 'desa']),
             'desas' => $desasForForm,
+            'penggunaanTanahs' => $penggunaanTanahs,
         ]);
     }
 
     public function update(UpdateSertifikatRequest $request, Sertifikat $sertifikat)
     {
+        $this->authorize('update', $sertifikat);
+
         $v = $request->validated();
 
         $kategori = $v['kategori'] ?? 'masyarakat';
@@ -255,6 +276,8 @@ class SertifikatController extends Controller
 
     public function destroy(Sertifikat $sertifikat)
     {
+        $this->authorize('delete', $sertifikat);
+
         $sertifikat->delete();
         return redirect()->route('admin.sertifikat.index')
             ->with('success', 'Aset tanah berhasil dihapus.');
@@ -263,6 +286,8 @@ class SertifikatController extends Controller
     public function restore($id)
     {
         $sertifikat = Sertifikat::withTrashed()->findOrFail($id);
+        $this->authorize('restore', $sertifikat);
+
         $sertifikat->restore();
         return redirect()->route('admin.sertifikat.index')
             ->with('success', 'Aset tanah berhasil dipulihkan.');

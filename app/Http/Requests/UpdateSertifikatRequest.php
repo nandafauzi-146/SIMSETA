@@ -32,7 +32,9 @@ class UpdateSertifikatRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('sertifikats', 'nomor_sertifikat')->ignore($sertifikat)
+                Rule::unique('sertifikats', 'nomor_sertifikat')
+                    ->ignore($sertifikat)
+                    ->whereNull('deleted_at'),
             ],
             'nib' => 'nullable|string|max:255',
             'jenis_hak_nama' => 'required|string|max:255',

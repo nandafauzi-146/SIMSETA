@@ -10,6 +10,8 @@ class DesaController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Desa::class);
+
         $query = Desa::query();
 
         if ($request->filled('search')) {
@@ -25,11 +27,15 @@ class DesaController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Desa::class);
+
         return view('admin.desa.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Desa::class);
+
         $validated = $request->validate([
             'dusun' => 'required|string|max:255',
         ]);
@@ -45,11 +51,15 @@ class DesaController extends Controller
 
     public function edit(Desa $desa)
     {
+        $this->authorize('update', $desa);
+
         return view('admin.desa.edit', compact('desa'));
     }
 
     public function update(Request $request, Desa $desa)
     {
+        $this->authorize('update', $desa);
+
         $validated = $request->validate([
             'dusun' => 'required|string|max:255',
         ]);
@@ -65,6 +75,13 @@ class DesaController extends Controller
 
     public function destroy(Desa $desa)
     {
+        $this->authorize('delete', $desa);
+
+        if ($desa->sertifikats()->exists()) {
+            return redirect()->route('admin.desa.index')
+                ->with('error', 'Dukuh tidak dapat dihapus karena masih memiliki data aset tanah. Pindahkan atau hapus asetnya terlebih dahulu.');
+        }
+
         $desa->delete();
 
         return redirect()->route('admin.desa.index')

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
@@ -58,25 +59,21 @@ class LoginController extends Controller
         $token = $request->input('cf-turnstile-response');
         $secret = config('services.turnstile.secret_key');
 
-        if (!$token || !$secret) {
-            return true;
+        if (!$secret) {
+            return 'Verifikasi keamanan belum dikonfigurasi. Silakan hubungi administrator.';
         }
 
-        $ch = curl_init('https://challenges.cloudflare.com/turnstile/v0/siteverify');
-        curl_setopt_array($ch, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => http_build_query([
-                'secret' => $secret,
-                'response' => $token,
-                'remoteip' => $request->ip(),
-            ]),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 5,
-        ]);
-        $result = json_decode(curl_exec($ch), true);
-        curl_close($ch);
+        if (!$token) {
+            return 'Verifikasi keamanan belum selesai. Selesaikan verifikasi Cloudflare terlebih dahulu.';
+        }
 
-        if (!($result['success'] ?? false)) {
+        $response = Http::timeout(5)->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+            'secret' => $secret,
+            'response' => $token,
+            'remoteip' => $request->ip(),
+        ]);
+
+        if ($response->failed() || ! ($response->json('success') ?? false)) {
             return 'Verifikasi keamanan gagal. Silakan refresh halaman dan coba lagi.';
         }
 

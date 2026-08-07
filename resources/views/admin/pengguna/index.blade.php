@@ -5,10 +5,12 @@
 
 @section('content')
     <x-admin.page-header title="Kelola Pengguna" description="Lihat status, peran, dan kelola akses pengguna.">
-        <a href="{{ route('admin.pengguna.create') }}"
-            class="inline-flex items-center gap-2 rounded-3xl bg-[var(--primary)] px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--primary-dark)]">
-            <i class="fas fa-plus"></i>Tambah Pengguna
-        </a>
+        <div class="w-full sm:w-auto mt-4 sm:mt-0">
+            <a href="{{ route('admin.pengguna.create') }}"
+                class="w-full sm:w-auto justify-center inline-flex items-center gap-2 rounded-3xl bg-[var(--primary)] px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--primary-dark)]">
+                <i class="fas fa-plus"></i>Tambah Pengguna
+            </a>
+        </div>
     </x-admin.page-header>
 
     <div class="rounded-[2rem] border border-[var(--primary)]/15 bg-white shadow-lg overflow-hidden">
@@ -36,7 +38,7 @@
 
         <div class="overflow-x-auto">
             <table class="w-full min-w-[640px] divide-y divide-slate-100 text-sm">
-                <thead class="bg-[var(--bg)] text-[var(--text-muted)]">
+                <thead class="bg-[var(--bg)] text-[var(--text-muted)] whitespace-nowrap">
                     <tr>
                         <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Nama</th>
                         <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Email</th>
@@ -47,7 +49,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white">
                     @forelse ($users as $user)
-                        <tr class="hover:bg-[var(--bg)]/50 transition-colors">
+                        <tr class="hover:bg-[var(--bg)]/50 transition-colors whitespace-nowrap">
                             <td class="px-4 py-3 sm:px-6 sm:py-4 font-semibold text-[var(--text)]">{{ $user->name }}</td>
                             <td class="px-4 py-3 sm:px-6 sm:py-4 text-[var(--text-muted)]">{{ $user->email }}</td>
                             <td class="px-4 py-3 sm:px-6 sm:py-4 text-[var(--text-muted)]">{{ $user->roles->pluck('name')->join(', ') ?: '-' }}</td>
@@ -70,15 +72,15 @@
                                         <i class="fas fa-edit text-sm"></i>
                                     </a>
                                     @if (auth()->id() !== $user->id)
-                                        <form method="POST" action="{{ route('admin.pengguna.destroy', $user) }}" class="inline"
-                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?')">
+                                        <form id="form-hapus-pengguna-{{ $user->id }}" method="POST" action="{{ route('admin.pengguna.destroy', $user) }}" class="hidden">
                                             @csrf @method('DELETE')
-                                            <button type="submit"
-                                                class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-100 hover:text-red-800"
-                                                title="Hapus">
-                                                <i class="fas fa-trash text-sm"></i>
-                                            </button>
                                         </form>
+                                        <button type="button"
+                                            onclick="openHapusModal('form-hapus-pengguna-{{ $user->id }}', '{{ addslashes($user->name) }}', 'pengguna')"
+                                            class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-100 hover:text-red-800"
+                                            title="Hapus">
+                                            <i class="fas fa-trash text-sm"></i>
+                                        </button>
                                     @endif
                                 </div>
                             </td>
@@ -103,4 +105,47 @@
             </div>
         @endif
     </div>
+@endsection
+
+{{-- Modal Konfirmasi Hapus --}}
+<div id="hapus-modal-global"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+    onclick="if(event.target===this) closeHapusModal()">
+    <div class="w-full max-w-xs animate-modal rounded-xl bg-white p-5 shadow-2xl">
+        <div class="flex flex-col items-center text-center">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 mb-3">
+                <i class="fas fa-trash-alt text-sm text-red-500"></i>
+            </div>
+            <h3 class="text-sm font-bold text-[var(--text)]">Hapus Data?</h3>
+            <p class="mt-0.5 text-xs text-[var(--text-muted)]">Apakah Anda yakin ingin menghapus <b id="hapus-label-global"></b>?</p>
+        </div>
+        <div class="mt-4 flex gap-2">
+            <button type="button" onclick="closeHapusModal()"
+                class="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-slate-50">
+                Batal
+            </button>
+            <button type="button" id="hapus-confirm-btn"
+                class="flex-1 rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-red-700">
+                <i class="fas fa-trash-alt mr-1.5"></i>Hapus
+            </button>
+        </div>
+    </div>
+</div>
+
+@section('scripts')
+<script>
+let _hapusFormId = null;
+function openHapusModal(formId, label, jenis) {
+    _hapusFormId = formId;
+    document.getElementById('hapus-label-global').innerHTML = '"' + label + '"' + (jenis ? ' (' + jenis + ')' : '');
+    document.getElementById('hapus-modal-global').classList.remove('hidden');
+}
+function closeHapusModal() {
+    document.getElementById('hapus-modal-global').classList.add('hidden');
+    _hapusFormId = null;
+}
+document.getElementById('hapus-confirm-btn').addEventListener('click', function () {
+    if (_hapusFormId) document.getElementById(_hapusFormId).submit();
+});
+</script>
 @endsection

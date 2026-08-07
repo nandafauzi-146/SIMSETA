@@ -29,7 +29,7 @@ class StoreSertifikatRequest extends FormRequest
         return [
             // A. Informasi Tanah
             'kategori' => 'required|in:masyarakat,kas_desa',
-            'nomor_sertifikat' => 'required|unique:sertifikats,nomor_sertifikat|string|max:255',
+            'nomor_sertifikat' => 'required|string|max:255|unique:sertifikats,nomor_sertifikat,NULL,id,deleted_at,NULL',
             'nib' => 'nullable|string|max:255',
             'jenis_hak_nama' => 'required|string|max:255',
             'luas' => 'required|numeric|min:0',

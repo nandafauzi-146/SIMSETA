@@ -16,12 +16,19 @@ Route::get('/', function () {
     return view('index');
 })->name('home');
 
+Route::get('/sitemap.xml', function () {
+    $content = view('sitemap')->render();
+    return response($content, 200)->header('Content-Type', 'application/xml');
+})->name('sitemap');
+
 Route::post('/pencarian', [PublicSearchController::class, 'search'])->name('public.search')->middleware('throttle:30,1');
 
 // Auth routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
+
+use App\Http\Controllers\Admin\PenggunaanTanahController;
 
 // Admin routes
 Route::middleware(['auth', 'verified', 'can.access.admin'])->group(function () {
@@ -31,6 +38,7 @@ Route::middleware(['auth', 'verified', 'can.access.admin'])->group(function () {
         Route::patch('sertifikat/{id}/restore', [SertifikatController::class, 'restore'])->name('sertifikat.restore');
         Route::resource('pengguna', PenggunaController::class);
         Route::resource('desa', DesaController::class)->except(['show']);
+        Route::resource('penggunaan-tanah', PenggunaanTanahController::class)->except(['create', 'edit', 'show']);
         Route::prefix('laporan')->name('laporan.')->group(function () {
             Route::get('/', [LaporanController::class, 'index'])->name('index');
             Route::get('/pdf', [LaporanController::class, 'exportPdf'])->name('export-pdf');

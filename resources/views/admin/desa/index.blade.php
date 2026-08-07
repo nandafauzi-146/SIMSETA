@@ -6,10 +6,12 @@
 @section('content')
     <x-admin.page-header title="Kelola Dukuh"
         description="Atur data dukuh yang akan muncul saat menambahkan aset tanah.">
-        <a href="{{ route('admin.desa.create') }}"
-            class="inline-flex items-center gap-2 rounded-3xl bg-[var(--primary)] px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--primary-dark)]">
-            <i class="fas fa-plus"></i>Tambah Dukuh
-        </a>
+        <div class="w-full sm:w-auto mt-4 sm:mt-0">
+            <a href="{{ route('admin.desa.create') }}"
+                class="w-full sm:w-auto justify-center inline-flex items-center gap-2 rounded-3xl bg-[var(--primary)] px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--primary-dark)]">
+                <i class="fas fa-plus"></i>Tambah Dukuh
+            </a>
+        </div>
     </x-admin.page-header>
 
     <div class="rounded-[2rem] border border-[var(--primary)]/15 bg-white shadow-lg overflow-hidden">
@@ -37,7 +39,7 @@
 
         <div class="overflow-x-auto">
             <table class="w-full min-w-[560px] divide-y divide-slate-100 text-sm">
-                <thead class="bg-[var(--bg)] text-[var(--text-muted)]">
+                <thead class="bg-[var(--bg)] text-[var(--text-muted)] whitespace-nowrap">
                     <tr>
                         <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em] w-16">No</th>
                         <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Nama Dukuh</th>
@@ -47,7 +49,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white">
                     @forelse ($desas as $desa)
-                        <tr class="hover:bg-[var(--bg)]/50 transition-colors">
+                        <tr class="hover:bg-[var(--bg)]/50 transition-colors whitespace-nowrap">
                             <td class="px-4 py-3 sm:px-6 sm:py-4 text-[var(--text-muted)]">{{ $loop->iteration }}</td>
                             <td class="px-4 py-3 sm:px-6 sm:py-4 font-semibold text-[var(--text)]">{{ $desa->dusun ?: '-' }}</td>
                             <td class="px-4 py-3 sm:px-6 sm:py-4 text-[var(--text-muted)]">{{ $desa->nama }}</td>
@@ -58,15 +60,15 @@
                                         title="Edit data">
                                         <i class="fas fa-edit text-sm"></i>
                                     </a>
-                                    <form method="POST" action="{{ route('admin.desa.destroy', $desa) }}" class="inline"
-                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus dukuh ini?')">
+                                    <form id="form-hapus-desa-{{ $desa->id }}" method="POST" action="{{ route('admin.desa.destroy', $desa) }}" class="hidden">
                                         @csrf @method('DELETE')
-                                        <button type="submit"
-                                            class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-100 hover:text-red-800"
-                                            title="Hapus">
-                                            <i class="fas fa-trash text-sm"></i>
-                                        </button>
                                     </form>
+                                    <button type="button"
+                                        onclick="openHapusModal('form-hapus-desa-{{ $desa->id }}', '{{ addslashes($desa->dusun ?: $desa->nama) }}', 'dukuh')"
+                                        class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-100 hover:text-red-800"
+                                        title="Hapus">
+                                        <i class="fas fa-trash text-sm"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -90,4 +92,25 @@
             </div>
         @endif
     </div>
+@endsection
+
+@section('scripts')
+<script>
+let _hapusFormId = null;
+function openHapusModal(formId, label, jenis) {
+    _hapusFormId = formId;
+    document.getElementById('hapus-label-global').innerHTML = '"' + label + '"' + (jenis ? ' (' + jenis + ')' : '');
+    document.getElementById('hapus-modal-global').style.display = 'flex';
+}
+function closeHapusModal() {
+    document.getElementById('hapus-modal-global').style.display = 'none';
+    _hapusFormId = null;
+}
+document.addEventListener('DOMContentLoaded', function () {
+    const btn = document.getElementById('hapus-confirm-btn');
+    if (btn) btn.addEventListener('click', function () {
+        if (_hapusFormId) document.getElementById(_hapusFormId).submit();
+    });
+});
+</script>
 @endsection

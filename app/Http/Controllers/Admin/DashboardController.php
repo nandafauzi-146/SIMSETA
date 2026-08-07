@@ -8,9 +8,12 @@ use App\Models\Pemilik;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use App\Traits\UsesYearSql;
 
 class DashboardController extends Controller
 {
+    use UsesYearSql;
+
     public function index()
     {
         // Cache dashboard computations briefly to reduce DB load on frequent page reloads
@@ -41,21 +44,28 @@ class DashboardController extends Controller
                 'kosong' => Sertifikat::kasDesa()->where('status_pemanfaatan', 'Kosong')->count(),
             ];
 
-            // ── Chart: Tren Bulanan (stacked: masyarakat vs kas desa) ──
+            // ── Chart: Tren Bulanan — 1 query GROUP BY (menggantikan 12 query looping) ──
+            $sixMonthsAgo = now()->subMonths(5)->startOfMonth();
+            $monthlyRaw = Sertifikat::selectRaw(
+                    "kategori, {$this->yearMonthSql()} as ym, COUNT(*) as total"
+                )
+                ->where('created_at', '>=', $sixMonthsAgo)
+                ->whereIn('kategori', ['masyarakat', 'kas_desa'])
+                ->groupBy('kategori', 'ym')
+                ->orderBy('ym')
+                ->get()
+                ->groupBy(fn($r) => $r->ym);
+
             $monthlyLabels = [];
             $monthlyMasyarakat = [];
             $monthlyKasDesa = [];
             for ($i = 5; $i >= 0; $i--) {
                 $date = now()->subMonths($i);
-                $monthlyLabels[] = $date->format('M Y');
-                $monthlyMasyarakat[] = Sertifikat::masyarakat()
-                    ->whereYear('created_at', $date->year)
-                    ->whereMonth('created_at', $date->month)
-                    ->count();
-                $monthlyKasDesa[] = Sertifikat::kasDesa()
-                    ->whereYear('created_at', $date->year)
-                    ->whereMonth('created_at', $date->month)
-                    ->count();
+                $key   = $date->format('Y-m');
+                $monthlyLabels[]     = $date->format('M Y');
+                $group = $monthlyRaw->get($key, collect());
+                $monthlyMasyarakat[] = (int) ($group->firstWhere('kategori', 'masyarakat')?->total ?? 0);
+                $monthlyKasDesa[]    = (int) ($group->firstWhere('kategori', 'kas_desa')?->total ?? 0);
             }
 
             // ── Chart: Distribusi per Dusun ──
@@ -78,6 +88,24 @@ class DashboardController extends Controller
             $komposisiData = [$masyarakat['total'], $kasDesa['total']];
             $komposisiColors = ['#2E7D32', '#C89B53'];
 
+            // ── Chart: Distribusi Penggunaan Tanah ──
+            $penggunaanLabels = [];
+            $penggunaanData = [];
+            $penggunaanColors = [];
+            $penggunaanPalette = ['#2E7D32', '#C89B53', '#1565C0', '#E65100', '#6A1B9A', '#00838F', '#AD1457', '#FF8F00', '#2E7D32', '#5D4037'];
+            $perPenggunaan = Sertifikat::select('penggunaan_tanah', DB::raw('count(*) as total'))
+                ->whereNotNull('penggunaan_tanah')
+                ->where('penggunaan_tanah', '!=', '')
+                ->groupBy('penggunaan_tanah')
+                ->orderByDesc('total')
+                ->get();
+            foreach ($perPenggunaan as $i => $item) {
+                $penggunaanLabels[] = $item->penggunaan_tanah;
+                $penggunaanData[] = $item->total;
+                $penggunaanColors[] = $penggunaanPalette[$i % count($penggunaanPalette)];
+            }
+            $totalPenggunaan = array_sum($penggunaanData);
+
             return compact(
                 'stats',
                 'masyarakat',
@@ -90,7 +118,11 @@ class DashboardController extends Controller
                 'dusunColors',
                 'komposisiLabels',
                 'komposisiData',
-                'komposisiColors'
+                'komposisiColors',
+                'penggunaanLabels',
+                'penggunaanData',
+                'penggunaanColors',
+                'totalPenggunaan'
             );
         });
 
@@ -106,6 +138,10 @@ class DashboardController extends Controller
         $komposisiLabels = $dashboard['komposisiLabels'];
         $komposisiData = $dashboard['komposisiData'];
         $komposisiColors = $dashboard['komposisiColors'];
+        $penggunaanLabels = $dashboard['penggunaanLabels'];
+        $penggunaanData = $dashboard['penggunaanData'];
+        $penggunaanColors = $dashboard['penggunaanColors'];
+        $totalPenggunaan = $dashboard['totalPenggunaan'];
 
         $sewaAkanBerakhir = collect();
 
@@ -122,6 +158,10 @@ class DashboardController extends Controller
             'komposisiLabels' => $komposisiLabels,
             'komposisiData' => $komposisiData,
             'komposisiColors' => $komposisiColors,
+            'penggunaanLabels' => $penggunaanLabels,
+            'penggunaanData' => $penggunaanData,
+            'penggunaanColors' => $penggunaanColors,
+            'totalPenggunaan' => $totalPenggunaan,
         ]));
     }
 }

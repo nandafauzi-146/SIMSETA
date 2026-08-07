@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SIMSETA Tegal Mulyo</title>
-    <link rel="icon" type="image/webp" href="{{ asset('Logo-Simseta.webp') }}">
+    <link rel="icon" type="image/webp" href="{{ asset('Logo-Simseta.webp') . '?v=' . filemtime(public_path('Logo-Simseta.webp')) }}">
+    <link rel="apple-touch-icon" href="{{ asset('Logo-Simseta.webp') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])

@@ -11,12 +11,16 @@ class SettingsController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Setting::class);
+
         $desa = Desa::first();
         return view('admin.settings.index', compact('desa'));
     }
 
     public function update(Request $request)
     {
+        $this->authorize('update', Setting::class);
+
         $request->validate([
             'nama_desa' => 'required|string|max:255',
             'dusun' => 'nullable|string|max:255',

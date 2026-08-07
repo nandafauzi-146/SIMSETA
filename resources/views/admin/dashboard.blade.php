@@ -141,8 +141,10 @@
             </div>
         </section>
 
+    
+
         {{-- ══════════ SECONDARY STAT CARDS ══════════ --}}
-        <section class="grid gap-4 sm:grid-cols-2">
+        <section class="grid gap-4 lg:grid-cols-2">
             {{-- Card: Total Pemilik --}}
             <div class="dash-card group rounded-2xl border border-[var(--primary)]/10 bg-white p-5 shadow-sm transition-all duration-300 hover:border-[var(--primary)]/25 hover:shadow-md">
                 <div class="flex items-center justify-between">
@@ -160,28 +162,34 @@
                 </div>
             </div>
 
-            {{-- Card: Total Pengguna --}}
-            <div class="dash-card group rounded-2xl border border-[var(--primary)]/10 bg-white p-5 shadow-sm transition-all duration-300 hover:border-[var(--accent)]/25 hover:shadow-md">
+            
+
+            {{-- Card: Penggunaan Tanah --}}
+            <div class="dash-card group rounded-2xl border border-[var(--primary)]/10 bg-white p-5 shadow-sm transition-all duration-300 hover:border-[var(--secondary)]/25 hover:shadow-md">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-[11px] font-medium uppercase tracking-[0.15em] text-[var(--text-muted)]">Pengguna Terdaftar</p>
-                        <p class="mt-1.5 text-3xl font-bold text-[var(--text)]">{{ number_format($total_pengguna) }}</p>
+                        <p class="text-[11px] font-medium uppercase tracking-[0.15em] text-[var(--text-muted)]">Penggunaan Tanah</p>
+                        <p class="mt-1.5 text-3xl font-bold text-[var(--text)]">{{ number_format($totalPenggunaan) }}</p>
                     </div>
-                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent)]/10 text-[var(--accent)] transition-transform duration-300 group-hover:scale-110">
-                        <i class="fas fa-users text-lg"></i>
+                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--primary)]/10 text-[var(--primary)] transition-transform duration-300 group-hover:scale-110">
+                        <i class="fas fa-seedling text-lg"></i>
                     </div>
                 </div>
-                <p class="mt-3 text-xs leading-5 text-[var(--text-muted)]">Akun Admin & Staff yang memiliki akses ke panel.</p>
-                <div class="mt-3 flex gap-1.5">
-                    @for ($i = 0; $i < min($total_pengguna, 6); $i++)
-                        <div class="h-1.5 flex-1 rounded-full {{ $i < $total_pengguna ? 'bg-[var(--accent)]' : 'bg-slate-100' }}"></div>
-                    @endfor
-                    @if($total_pengguna < 6)
-                        @for ($i = $total_pengguna; $i < 6; $i++)
-                            <div class="h-1.5 flex-1 rounded-full bg-slate-100"></div>
-                        @endfor
-                    @endif
-                </div>
+                <p class="mt-3 text-xs leading-5 text-[var(--text-muted)]">Total bidang berdasarkan {{ count($penggunaanLabels) }} jenis penggunaan.</p>
+                @if(count($penggunaanLabels) > 0)
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        @foreach($penggunaanLabels as $i => $label)
+                            <span class="inline-flex items-center gap-1.5 rounded-lg bg-[var(--primary)]/8 px-2.5 py-1 text-xs font-semibold text-[var(--primary)] border border-[var(--primary)]/15">
+                                <span class="h-2 w-2 rounded-full shrink-0" style="background-color: {{ $penggunaanColors[$i] ?? 'var(--primary)' }}"></span>
+                                {{ $label }} <span class="text-[var(--text-muted)] font-medium">({{ $penggunaanData[$i] }})</span>
+                            </span>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="mt-3 h-1 w-full overflow-hidden rounded-full bg-slate-100">
+                        <div class="h-full rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)]" style="width: 0%"></div>
+                    </div>
+                @endif
             </div>
         </section>
 
@@ -252,36 +260,70 @@
             </div>
         </section>
 
-        {{-- ══════════ DISTRIBUSI DUKUH CHART ══════════ --}}
-        <section class="dash-card rounded-2xl border border-[var(--primary)]/10 bg-white p-5 shadow-sm transition-shadow duration-300 hover:shadow-md">
-            <div class="mb-4 flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--secondary)]/10">
-                        <i class="fas fa-map-marked-alt text-xs text-[var(--secondary)]"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-semibold text-[var(--text)]">Distribusi per Dukuh</h3>
-                        <p class="text-[10px] text-[var(--text-muted)]">Sebaran seluruh aset tanah per lokasi</p>
-                    </div>
-                </div>
-                <span class="rounded-full bg-[var(--secondary)]/10 px-2.5 py-0.5 text-[10px] font-semibold text-[var(--primary)]">
-                    <i class="fas fa-map-marker-alt mr-1"></i>Wilayah
-                </span>
-            </div>
-            <div class="relative flex h-72 items-center justify-center">
-                @if(count($dusunData) > 0 && array_sum($dusunData) > 0)
-                    <div class="h-64 w-64">
-                        <canvas id="chart-dusun"></canvas>
-                    </div>
-                @else
-                    <div class="flex h-full flex-col items-center justify-center text-center">
-                        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50">
-                            <i class="fas fa-map-marked-alt text-xl text-slate-300"></i>
+        {{-- ══════════ DISTRIBUSI DUKUH & PENGGUNAAN CHART ══════════ --}}
+        <section class="grid gap-4 lg:grid-cols-2">
+            {{-- Chart: Distribusi Dukuh --}}
+            <div class="dash-card rounded-2xl border border-[var(--primary)]/10 bg-white p-5 shadow-sm transition-shadow duration-300 hover:shadow-md">
+                <div class="mb-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--secondary)]/10">
+                            <i class="fas fa-map-marked-alt text-xs text-[var(--secondary)]"></i>
                         </div>
-                        <p class="mt-3 text-sm font-medium text-[var(--text-muted)]">Belum ada distribusi</p>
-                        <p class="mt-1 text-xs text-slate-400">Data dukuh akan muncul saat aset terhubung ke lokasi.</p>
+                        <div>
+                            <h3 class="text-sm font-semibold text-[var(--text)]">Distribusi per Dukuh</h3>
+                            <p class="text-[10px] text-[var(--text-muted)]">Sebaran seluruh aset tanah per lokasi</p>
+                        </div>
                     </div>
-                @endif
+                    <span class="rounded-full bg-[var(--secondary)]/10 px-2.5 py-0.5 text-[10px] font-semibold text-[var(--primary)]">
+                        <i class="fas fa-map-marker-alt mr-1"></i>Wilayah
+                    </span>
+                </div>
+                <div class="relative flex h-72 items-center justify-center">
+                    @if(count($dusunData) > 0 && array_sum($dusunData) > 0)
+                        <div class="h-64 w-64">
+                            <canvas id="chart-dusun"></canvas>
+                        </div>
+                    @else
+                        <div class="flex h-full flex-col items-center justify-center text-center">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50">
+                                <i class="fas fa-map-marked-alt text-xl text-slate-300"></i>
+                            </div>
+                            <p class="mt-3 text-sm font-medium text-[var(--text-muted)]">Belum ada distribusi</p>
+                            <p class="mt-1 text-xs text-slate-400">Data dukuh akan muncul saat aset terhubung ke lokasi.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Chart: Distribusi Penggunaan Tanah --}}
+            <div class="dash-card rounded-2xl border border-[var(--primary)]/10 bg-white p-5 shadow-sm transition-shadow duration-300 hover:shadow-md">
+                <div class="mb-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--primary)]/10">
+                            <i class="fas fa-seedling text-xs text-[var(--primary)]"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-[var(--text)]">Distribusi Penggunaan Tanah</h3>
+                            <p class="text-[10px] text-[var(--text-muted)]">Sebaran jenis penggunaan seluruh bidang</p>
+                        </div>
+                    </div>
+                    <span class="rounded-full bg-[var(--primary)]/8 px-2.5 py-0.5 text-[10px] font-semibold text-[var(--primary)]">
+                        <i class="fas fa-chart-bar mr-1"></i>Penggunaan
+                    </span>
+                </div>
+                <div class="relative h-72">
+                    @if(count($penggunaanData) > 0 && array_sum($penggunaanData) > 0)
+                        <canvas id="chart-penggunaan" class="h-full w-full"></canvas>
+                    @else
+                        <div class="flex h-full flex-col items-center justify-center text-center">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50">
+                                <i class="fas fa-seedling text-xl text-slate-300"></i>
+                            </div>
+                            <p class="mt-3 text-sm font-medium text-[var(--text-muted)]">Belum ada data penggunaan</p>
+                            <p class="mt-1 text-xs text-slate-400">Data akan muncul saat penggunaan tanah mulai diisi.</p>
+                        </div>
+                    @endif
+                </div>
             </div>
         </section>
 
@@ -465,6 +507,59 @@ document.addEventListener('DOMContentLoaded', function() {
                         bodyFont: { size: 11 },
                         padding: 10,
                         cornerRadius: 8,
+                    }
+                }
+            }
+        });
+    }
+    // ── Horizontal Bar Chart: Distribusi Penggunaan Tanah ──
+    const ctxPenggunaan = document.getElementById('chart-penggunaan');
+    if (ctxPenggunaan) {
+        new Chart(ctxPenggunaan, {
+            type: 'bar',
+            data: {
+                labels: @json($penggunaanLabels),
+                datasets: [{
+                    label: 'Jumlah Bidang',
+                    data: @json($penggunaanData),
+                    backgroundColor: @json($penggunaanColors).map(c => c + 'B3'),
+                    borderColor: @json($penggunaanColors),
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1F2937',
+                        titleFont: { size: 12, weight: '600' },
+                        bodyFont: { size: 11 },
+                        padding: 10,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(ctx) {
+                                const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : 0;
+                                return ctx.raw + ' bidang (' + pct + '%)';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, font: { size: 11 }, color: '#6B7280' },
+                        grid: { color: 'rgba(0,0,0,0.04)' },
+                        border: { display: false },
+                    },
+                    x: {
+                        ticks: { font: { size: 10 }, color: '#374151' },
+                        grid: { display: false },
+                        border: { display: false },
                     }
                 }
             }

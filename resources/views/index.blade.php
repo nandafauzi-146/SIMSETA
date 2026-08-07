@@ -1,15 +1,101 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" prefix="og: https://ogp.me/ns#">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="Cek status sertifikat tanah Desa Tegalmulyo secara online. Portal publik layanan informasi pertanahan resmi Pemerintah Desa Tegalmulyo.">
-    <title>SIMSETA - Sistem Informasi Manajemen Sertifikat Tanah Desa Tegalmulyo</title>
-    <link rel="icon" type="image/webp" href="{{ asset('Logo-Simseta.webp') }}">
 
-    <link rel="preconnect" href="https://fonts.bunny.net">
+    {{-- ── Primary SEO ─────────────────────────────────────── --}}
+    <title>SIMSETA — Cek Sertifikat Tanah Desa Tegalmulyo Online</title>
+    <meta name="description" content="Portal publik resmi Pemerintah Desa Tegalmulyo untuk pengecekan status sertifikat tanah. Cari data aset tanah berdasarkan nomor sertifikat atau alas hak kepemilikan secara cepat dan aman.">
+    <meta name="keywords" content="sertifikat tanah, cek sertifikat tanah, tegalmulyo, alas hak, NIB, aset desa, pertanahan, desa tegalmulyo, klaten">
+    <meta name="author" content="Pemerintah Desa Tegalmulyo">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <link rel="canonical" href="{{ url('/') }}">
+
+    {{-- ── Open Graph (Facebook, WhatsApp, LinkedIn) ──────── --}}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url('/') }}">
+    <meta property="og:title" content="SIMSETA — Cek Sertifikat Tanah Desa Tegalmulyo">
+    <meta property="og:description" content="Portal publik resmi untuk pengecekan status sertifikat tanah. Cari data aset tanah berdasarkan nomor sertifikat atau alas hak kepemilikan secara cepat dan aman.">
+    <meta property="og:image" content="{{ asset('Logo-Simseta.webp') }}">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:image:alt" content="Logo SIMSETA Desa Tegalmulyo">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:site_name" content="SIMSETA Tegalmulyo">
+
+    {{-- ── Twitter Card ─────────────────────────────────────── --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SIMSETA — Cek Sertifikat Tanah Desa Tegalmulyo">
+    <meta name="twitter:description" content="Portal publik resmi untuk pengecekan status sertifikat tanah berdasarkan nomor sertifikat atau alas hak kepemilikan.">
+    <meta name="twitter:image" content="{{ asset('Logo-Simseta.webp') }}">
+    <meta name="twitter:image:alt" content="Logo SIMSETA">
+
+    {{-- ── Geo & Local SEO ─────────────────────────────────── --}}
+    <meta name="geo.region" content="ID-JT">
+    <meta name="geo.placename" content="Desa Tegalmulyo, Kemalang, Klaten, Jawa Tengah">
+    <meta name="geo.position" content="-7.5676;110.4572">
+    <meta name="ICBM" content="-7.5676, 110.4572">
+
+    {{-- ── Favicon ──────────────────────────────────────────── --}}
+    <link rel="icon" type="image/webp" href="{{ asset('Logo-Simseta.webp') }}">
+    <link rel="apple-touch-icon" href="{{ asset('Logo-Simseta.webp') }}">
+
+    {{-- ── Preconnect & Fonts ───────────────────────────────── --}}
+    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800" rel="stylesheet" />
+
+    {{-- ── JSON-LD Structured Data ─────────────────────────── --}}
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@type": "GovernmentService",
+      "name": "SIMSETA — Sistem Informasi Manajemen Sertifikat Tanah",
+      "description": "Portal publik resmi Pemerintah Desa Tegalmulyo untuk pengecekan status sertifikat tanah dan aset pertanahan desa.",
+      "url": "{{ url('/') }}",
+      "provider": {
+        "@type": "GovernmentOrganization",
+        "name": "Pemerintah Desa Tegalmulyo",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Tegalmulyo",
+          "addressRegion": "Jawa Tengah",
+          "addressCountry": "ID"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "-7.5676",
+          "longitude": "110.4572"
+        },
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+          "opens": "08:00",
+          "closes": "15:00"
+        }
+      },
+      "serviceType": "Layanan Informasi Pertanahan",
+      "areaServed": {
+        "@type": "Place",
+        "name": "Desa Tegalmulyo, Kemalang, Klaten"
+      }
+    }
+    </script>
+
+    {{-- ── FAQ Structured Data ──────────────────────────────── --}}
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Apa itu SIMSETA?", "acceptedAnswer": { "@type": "Answer", "text": "SIMSETA adalah portal publik layanan informasi pertanahan resmi Pemerintah Desa Tegal Mulyo berupa pusat data digital untuk transparansi dan kemudahan akses status sertifikat tanah secara mandiri." } },
+        { "@type": "Question", "name": "Apakah informasi yang ditampilkan resmi?", "acceptedAnswer": { "@type": "Answer", "text": "Data berasal dari administrasi Pemerintah Desa Tegal Mulyo dan digunakan sebagai media informasi masyarakat." } },
+        { "@type": "Question", "name": "Mengapa data saya tidak ditemukan?", "acceptedAnswer": { "@type": "Answer", "text": "Pastikan nomor yang dimasukkan benar. Jika tetap tidak ditemukan, silakan menghubungi kantor desa pada jam pelayanan." } },
+        { "@type": "Question", "name": "Apa itu Alas Hak / Bukti Kepemilikan?", "acceptedAnswer": { "@type": "Answer", "text": "Alas hak adalah dokumen dasar kepemilikan tanah seperti nomor sertifikat, girik, atau akta jual beli yang tercatat di administrasi desa." } }
+      ]
+    }
+    </script>
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -117,20 +203,23 @@
 </head>
 <body class="antialiased hero-pattern">
 
-    <header class="navbar">
+    <header class="navbar" role="banner" aria-label="Navigasi utama SIMSETA">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#2E7D32,#66BB6A);">
-                        <svg xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;" viewBox="0 0 20 20" fill="white">
-                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
-                    <span class="text-lg font-bold" style="color:var(--navy);">SIMSETA</span>
+                    <a href="/" class="flex items-center gap-2" aria-label="SIMSETA Beranda">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#2E7D32,#66BB6A);">
+                            <svg xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;" viewBox="0 0 20 20" fill="white" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <span class="text-lg font-bold" style="color:var(--navy);">SIMSETA</span>
+                    </a>
                 </div>
                 <a href="/login"
                    class="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold text-white transition hover:opacity-90 hover:-translate-y-0.5"
-                   style="background:linear-gradient(135deg,var(--primary),var(--primary-light));box-shadow:0 2px 8px rgba(46,125,50,0.25);">
+                   style="background:linear-gradient(135deg,var(--primary),var(--primary-light));box-shadow:0 2px 8px rgba(46,125,50,0.25);"
+                   aria-label="Login ke panel admin">
                     <svg xmlns="http://www.w3.org/2000/svg" style="width:15px;height:15px;" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                     </svg>
@@ -140,7 +229,7 @@
         </div>
     </header>
 
-    <main class="flex-grow flex flex-col items-center">
+    <main class="flex-grow flex flex-col items-center" role="main" id="main-content" aria-label="Konten utama SIMSETA">
 
         <section class="w-full flex flex-col items-center px-4 sm:px-6 pt-36 sm:pt-40 pb-16 hero-pb-mobile">
             <div class="text-center max-w-2xl mx-auto anim-1">
@@ -245,9 +334,10 @@
                     <span class="text-lg sponsor-text font-bold" style="color:var(--navy);">Pemdes <span class="font-normal" style="color:var(--text-muted);">Tegalmulyo</span></span>
                 </div>
                 <div class="sponsor-badge">
-                    <div class="sponsor-icon w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 text-white text-xs font-bold"
-                         style="background:linear-gradient(135deg,#f97316,#ef4444);">K</div>
-                    <span class="text-lg sponsor-text font-bold" style="color:var(--navy);">Kominfo <span class="font-normal" style="color:var(--text-muted);">Daerah</span></span>
+                    <div class="sponsor-icon w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 flex-shrink-0 overflow-hidden">
+                        <img src="{{ asset('Logo-Hmsi Impact.webp') }}" alt="HMSI IMPACT" class="w-full h-full object-contain p-0.5">
+                    </div>
+                    <span class="text-lg sponsor-text font-bold" style="color:var(--navy);">HMSI <span class="font-normal" style="color:var(--text-muted);">IMPACT</span></span>
                 </div>
             </div>
         </section>
@@ -282,9 +372,15 @@
 
     </main>
 
-    <footer class="border-t border-gray-200 bg-white mt-auto">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 text-center text-xs" style="color:var(--text-muted);">
-            &copy; {{ date('Y') }} Sistem Informasi Manajemen Sertifikat Tanah (SIMSETA). All rights reserved.
+    <footer class="border-t border-gray-200 bg-white mt-auto" role="contentinfo">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs" style="color:var(--text-muted);">
+                <span>&copy; {{ date('Y') }} Sistem Informasi Manajemen Sertifikat Tanah (SIMSETA) &mdash; Pemerintah Desa Tegalmulyo.</span>
+                <nav aria-label="Tautan kaki halaman" class="flex gap-4">
+                    <a href="/sitemap.xml" class="hover:underline" aria-label="Sitemap XML">Sitemap</a>
+                    <a href="/robots.txt" class="hover:underline" aria-label="Robots.txt">Robots</a>
+                </nav>
+            </div>
         </div>
     </footer>
 

@@ -17,6 +17,8 @@ class PenggunaController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', User::class);
+
         $query = User::with('roles');
 
         if ($request->filled('search')) {
@@ -35,6 +37,8 @@ class PenggunaController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', User::class);
+
         $roles = Cache::remember('roles_all', 3600, function () {
             return Role::all()->toArray();
         });
@@ -47,6 +51,8 @@ class PenggunaController extends Controller
      */
     public function store(StorePenggunaRequest $request)
     {
+        $this->authorize('create', User::class);
+
         $validated = $request->validated();
 
         $user = User::create([
@@ -66,6 +72,8 @@ class PenggunaController extends Controller
      */
     public function show(User $pengguna)
     {
+        $this->authorize('view', $pengguna);
+
         $user = $pengguna;
         return view('admin.pengguna.show', compact('user'));
     }
@@ -75,6 +83,8 @@ class PenggunaController extends Controller
      */
     public function edit(User $pengguna)
     {
+        $this->authorize('update', $pengguna);
+
         $user = $pengguna;
         $roles = Cache::remember('roles_all', 3600, function () {
             return Role::all()->toArray();
@@ -88,6 +98,8 @@ class PenggunaController extends Controller
      */
     public function update(Request $request, User $pengguna)
     {
+        $this->authorize('update', $pengguna);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $pengguna->id . '|max:255',
@@ -116,6 +128,8 @@ class PenggunaController extends Controller
      */
     public function destroy(User $pengguna)
     {
+        $this->authorize('delete', $pengguna);
+
         if (auth()->id() === $pengguna->id) {
             return redirect()->route('admin.pengguna.index')->with('error', 'Tidak dapat menghapus akun Anda sendiri.');
         }

@@ -6,13 +6,13 @@
 @section('content')
     <x-admin.page-header title="Daftar Aset Tanah"
         description="Kelola data aset tanah desa, cari berdasarkan alas hak, dan pantau status setiap bidang secara cepat.">
-        <div class="flex gap-2">
+        <div class="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto mt-4 sm:mt-0">
             <a href="{{ route('admin.sertifikat.create') }}?kategori=masyarakat"
-                class="inline-flex items-center gap-2 rounded-3xl bg-[var(--primary)] px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--primary-dark)]">
+                class="w-full sm:w-auto justify-center inline-flex items-center gap-2 rounded-3xl bg-[var(--primary)] px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--primary-dark)]">
                 <i class="fas fa-plus"></i>Tambah Tanah Pribadi
             </a>
             <a href="{{ route('admin.sertifikat.create') }}?kategori=kas_desa"
-                class="inline-flex items-center gap-2 rounded-3xl bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--accent-light)]">
+                class="w-full sm:w-auto justify-center inline-flex items-center gap-2 rounded-3xl bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--accent-light)]">
                 <i class="fas fa-landmark"></i>Tambah Tanah Kas Desa
             </a>
         </div>
@@ -79,7 +79,7 @@
 
         <div class="overflow-x-auto">
             <table class="w-full min-w-[760px] divide-y divide-slate-100 text-sm">
-                <thead class="bg-[var(--bg)] text-[var(--text-muted)]">
+                <thead class="bg-[var(--bg)] text-[var(--text-muted)] whitespace-nowrap">
                     <tr>
                         <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Nomor Sertifikat / Alas Hak</th>
                         <th class="px-4 py-3 sm:px-6 sm:py-4 text-left font-semibold uppercase tracking-[0.12em]">Kategori</th>
@@ -92,7 +92,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white">
                     @forelse ($sertifikats as $sertifikat)
-                        <tr class="hover:bg-[var(--bg)]/50 transition-colors">
+                        <tr class="hover:bg-[var(--bg)]/50 transition-colors whitespace-nowrap">
                             <td class="px-4 py-3 sm:px-6 sm:py-4 font-semibold text-[var(--text)]">{{ $sertifikat->nomor_sertifikat }}</td>
                             <td class="px-4 py-3 sm:px-6 sm:py-4">
                                 <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $sertifikat->kategori === 'kas_desa' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-green-50 text-green-700 border border-green-200' }}">
@@ -135,15 +135,15 @@
                                             title="Edit data">
                                             <i class="fas fa-edit text-sm"></i>
                                         </a>
-                                        <form method="POST" action="{{ route('admin.sertifikat.destroy', $sertifikat) }}"
-                                            class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data aset tanah ini?')">
+                                        <form id="form-hapus-sertifikat-{{ $sertifikat->id }}" method="POST" action="{{ route('admin.sertifikat.destroy', $sertifikat) }}" class="hidden">
                                             @csrf @method('DELETE')
-                                            <button type="submit"
-                                                class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-100 hover:text-red-800"
-                                                title="Hapus data">
-                                                <i class="fas fa-trash text-sm"></i>
-                                            </button>
                                         </form>
+                                        <button type="button"
+                                            onclick="openHapusModal('form-hapus-sertifikat-{{ $sertifikat->id }}', '{{ addslashes($sertifikat->nomor_sertifikat) }}', 'data aset tanah')"
+                                            class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-100 hover:text-red-800"
+                                            title="Hapus data">
+                                            <i class="fas fa-trash text-sm"></i>
+                                        </button>
                                     @endif
                                     @if ($sertifikat->trashed())
                                         <form method="POST" action="{{ route('admin.sertifikat.restore', $sertifikat->id) }}"
@@ -179,4 +179,28 @@
             </div>
         @endif
     </div>
+@endsection
+
+@section('scripts')
+<script>
+let _hapusFormId = null;
+function openHapusModal(formId, label, jenis) {
+    _hapusFormId = formId;
+    document.getElementById('hapus-label-global').innerHTML = '"' + label + '"' + (jenis ? ' (' + jenis + ')' : '');
+    document.getElementById('hapus-modal-global').style.display = 'flex';
+}
+function closeHapusModal() {
+    document.getElementById('hapus-modal-global').style.display = 'none';
+    _hapusFormId = null;
+}
+document.getElementById('hapus-confirm-btn').addEventListener('click', function () {
+    if (_hapusFormId) document.getElementById(_hapusFormId).submit();
+});
+document.addEventListener('DOMContentLoaded', function () {
+    const btn = document.getElementById('hapus-confirm-btn');
+    if (btn) btn.addEventListener('click', function () {
+        if (_hapusFormId) document.getElementById(_hapusFormId).submit();
+    });
+});
+</script>
 @endsection

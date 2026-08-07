@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Panel') - SIMSETA</title>
-    <link rel="icon" type="image/webp" href="{{ asset('Logo-Simseta.webp') }}">
+    <link rel="icon" type="image/webp" href="{{ asset('Logo-Simseta.webp') . '?v=' . filemtime(public_path('Logo-Simseta.webp')) }}">
+    <link rel="apple-touch-icon" href="{{ asset('Logo-Simseta.webp') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800" rel="stylesheet" />
@@ -101,7 +102,7 @@
     </style>
 </head>
 
-<body class="min-h-screen">
+<body class="min-h-screen overflow-x-hidden">
     <div x-data="{ sidebarOpen: false }" class="min-h-screen flex">
         <aside
             class="sidebar-pattern fixed inset-y-0 left-0 z-40 flex w-56 flex-col overflow-y-auto bg-gradient-to-b from-[var(--primary-dark)] via-[var(--primary)] to-[var(--primary-light)] text-white shadow-2xl shadow-black/20 md:translate-x-0 transition-transform duration-300 sidebar-scroll"
@@ -140,6 +141,11 @@
                     class="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition {{ request()->routeIs('admin.desa.*') ? 'bg-white/20 text-white shadow-md' : 'text-white/75 hover:bg-white/10 hover:text-white' }}">
                     <i class="fas fa-map-marked-alt w-4 text-center text-sm"></i>
                     Dukuh
+                </a>
+                <a href="{{ route('admin.penggunaan-tanah.index') }}"
+                    class="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition {{ request()->routeIs('admin.penggunaan-tanah.*') ? 'bg-white/20 text-white shadow-md' : 'text-white/75 hover:bg-white/10 hover:text-white' }}">
+                    <i class="fas fa-seedling w-4 text-center text-sm"></i>
+                    Penggunaan Tanah
                 </a>
                 <a href="{{ route('admin.laporan.index') }}"
                     class="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition {{ request()->routeIs('admin.laporan.*') ? 'bg-white/20 text-white shadow-md' : 'text-white/75 hover:bg-white/10 hover:text-white' }}">
@@ -180,7 +186,7 @@
             {{-- Footer --}}
             <div class="relative mt-auto border-t border-white/10 p-3">
                 <button type="button"
-                    onclick="window.showLogoutModal = true; document.getElementById('logout-modal').classList.remove('hidden')"
+                    onclick="document.getElementById('logout-modal').style.display = 'flex';"
                     class="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm font-semibold text-white/90 transition hover:bg-white/10">
                     <i class="fas fa-sign-out-alt w-4 text-center text-sm"></i>Keluar
                 </button>
@@ -191,7 +197,7 @@
         <div x-show="sidebarOpen" @click="sidebarOpen = false" x-cloak
             class="fixed inset-0 z-30 bg-black/50 md:hidden transition-opacity"></div>
 
-        <div class="flex-1 main-content-area">
+        <div class="flex-1 min-w-0 flex flex-col main-content-area">
             <div class="sticky top-0 z-20 border-b border-[#2E7D32]/15 bg-white/90 backdrop-blur-md">
                 <div class="flex flex-wrap items-center justify-between gap-x-9 gap-y-5 p-4">
                     <div class="flex items-center gap-3">
@@ -201,7 +207,7 @@
                         </button>
                         <div>
                             <h1 class="text-xl font-semibold text-[#1F2937]">@yield('page-heading', 'Dashboard')</h1>
-                            <p class="text-sm text-[var(--text-muted)]">Panel manajemen untuk Admin dan Staff.</p>
+                            <p class="text-sm text-[var(--text-muted)] hidden sm:block">Panel manajemen untuk Admin dan Staff.</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 text-[var(--text)]">
@@ -223,10 +229,13 @@
         </div>
     </div>
 
+    @include('admin._delete_modal')
+
     {{-- Logout Modal --}}
     <div id="logout-modal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-        onclick="if(event.target===this) document.getElementById('logout-modal').classList.add('hidden')">
+        style="display:none"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        onclick="if(event.target===this) closeLogoutModal()">
         <div class="mx-4 w-full max-w-xs animate-modal rounded-xl bg-white p-5 shadow-2xl">
             <div class="flex flex-col items-center text-center">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 mb-3">
@@ -236,7 +245,7 @@
                 <p class="mt-0.5 text-xs text-[var(--text-muted)]">Anda akan keluar dari panel admin SIMSETA.</p>
             </div>
             <div class="mt-4 flex gap-2">
-                <button type="button" onclick="document.getElementById('logout-modal').classList.add('hidden')"
+                <button type="button" onclick="closeLogoutModal()"
                     class="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-slate-50">
                     Batal
                 </button>
@@ -270,6 +279,11 @@
     </style>
 
     @yield('scripts')
+    <script>
+        function closeLogoutModal() {
+            document.getElementById('logout-modal').style.display = 'none';
+        }
+    </script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 </body>

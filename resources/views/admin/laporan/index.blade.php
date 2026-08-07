@@ -85,7 +85,7 @@
 
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[800px] text-sm">
-                    <thead>
+                    <thead class="whitespace-nowrap">
                         <tr class="border-b border-gray-200">
                             <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">No</th>
                             <th class="text-left py-3 px-2 font-semibold text-[var(--text-muted)]">Kategori</th>
@@ -100,7 +100,7 @@
                     </thead>
                     <tbody>
                         @foreach($sertifikats as $s)
-                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 whitespace-nowrap">
                                 <td class="py-3 px-2">{{ $loop->iteration }}</td>
                                 <td class="py-3 px-2">
                                     <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold {{ $s->kategori === 'kas_desa' ? 'bg-amber-55 bg-amber-50 text-amber-700 border border-amber-200' : 'bg-green-50 text-green-700 border border-green-200' }}">

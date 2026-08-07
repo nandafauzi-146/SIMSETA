@@ -200,20 +200,31 @@
                 <h3 class="mb-4 text-sm font-bold uppercase tracking-wider text-[var(--primary)] border-b border-slate-100 pb-2">D. Data Fisik</h3>
                 <div>
                     <label class="mb-2 block text-sm font-semibold text-[var(--text)]">Penggunaan Tanah</label>
-                    <input type="text" name="penggunaan_tanah" placeholder="Contoh: Sawah, Kebun, Permukiman, Pekarangan, Lapangan, TPU"
-                        value="{{ old('penggunaan_tanah') }}"
-                        class="w-full rounded-2xl border border-slate-200 bg-[var(--bg)]/50 px-4 py-3 text-sm focus:border-[var(--primary)] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/10 transition">
+                    <select name="penggunaan_tanah"
+                        class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm focus:border-[var(--primary)] focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/10 transition">
+                        <option value="">— Pilih Penggunaan Tanah —</option>
+                        @php
+                            $selectedValue = old('penggunaan_tanah');
+                            $optionsList = $penggunaanTanahs->pluck('nama')->toArray();
+                            if ($selectedValue && !in_array($selectedValue, $optionsList)) {
+                                $optionsList[] = $selectedValue;
+                            }
+                        @endphp
+                        @foreach($optionsList as $opsi)
+                            <option value="{{ $opsi }}" {{ $selectedValue == $opsi ? 'selected' : '' }}>{{ $opsi }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
 
             {{-- ─── Aksi ─── --}}
-            <div class="flex flex-wrap gap-3 border-t border-slate-100 pt-6">
+            <div class="flex flex-col sm:flex-row flex-wrap gap-3 border-t border-slate-100 pt-6">
                 <button type="submit"
-                    class="inline-flex items-center gap-2 rounded-3xl bg-[var(--primary)] px-8 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-[var(--primary-dark)]">
+                    class="w-full sm:w-auto justify-center inline-flex items-center gap-2 rounded-3xl bg-[var(--primary)] px-8 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-[var(--primary-dark)]">
                     <i class="fas fa-save"></i>Simpan Data Tanah
                 </button>
                 <a href="{{ route('admin.sertifikat.index') }}"
-                    class="inline-flex items-center gap-2 rounded-3xl bg-slate-100 px-8 py-3.5 text-sm font-bold text-[var(--text-muted)] transition hover:bg-slate-200">
+                    class="w-full sm:w-auto justify-center inline-flex items-center gap-2 rounded-3xl bg-slate-100 px-8 py-3.5 text-sm font-bold text-[var(--text-muted)] transition hover:bg-slate-200">
                     <i class="fas fa-times"></i>Batal
                 </a>
             </div>

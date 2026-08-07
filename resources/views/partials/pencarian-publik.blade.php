@@ -117,7 +117,7 @@
                 this.sertifikat = null;
 
                 if (!this.siteKey) {
-                    this.prosesCari(null);
+                    this.error = 'Verifikasi keamanan belum dikonfigurasi. Silakan hubungi administrator.';
                     return;
                 }
 

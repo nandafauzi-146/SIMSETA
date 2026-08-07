@@ -76,13 +76,13 @@
                     </div>
                 </div>
 
-                <div class="flex flex-wrap gap-3 border-t border-slate-100 pt-6">
+                <div class="flex flex-col sm:flex-row flex-wrap gap-3 border-t border-slate-100 pt-6">
                     <button type="submit"
-                        class="inline-flex items-center gap-2 rounded-3xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--primary-dark)]">
+                        class="w-full sm:w-auto justify-center inline-flex items-center gap-2 rounded-3xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--primary-dark)]">
                         <i class="fas fa-save"></i>Perbarui
                     </button>
                     <a href="{{ route('admin.pengguna.index') }}"
-                        class="inline-flex items-center gap-2 rounded-3xl bg-slate-100 px-6 py-3 text-sm font-semibold text-[var(--text-muted)] transition hover:bg-slate-200">
+                        class="w-full sm:w-auto justify-center inline-flex items-center gap-2 rounded-3xl bg-slate-100 px-6 py-3 text-sm font-semibold text-[var(--text-muted)] transition hover:bg-slate-200">
                         Batal
                     </a>
                 </div>
